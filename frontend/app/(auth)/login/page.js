@@ -12,12 +12,14 @@ const Login = () => {
     e.preventDefault();
     let email = e.target.email.value;
     let password = e.target.password.value;
+
+    // add validations here 
+
     const resss = await signIn("credentials", {
       redirect: false,
       email,
       password,
     });
-    console.log(resss);
     if (resss.ok) {
       router.replace("/");
     }
