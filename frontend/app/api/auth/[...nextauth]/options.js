@@ -1,8 +1,12 @@
 import CredentialsProvider from "next-auth/providers/credentials";
+import { request } from "graphql-request";
+import queries from "../../../../queries";
+
+// create callback on fail login
 
 export const options = {
-  pages : {
-    signIn: '/login',
+  pages: {
+    signIn: "/login",
   },
   providers: [
     CredentialsProvider({
@@ -21,35 +25,40 @@ export const options = {
       },
       async authorize(credentials) {
         try {
-          if (
-            credentials.email === "test@test.com" &&
-            credentials.password === "12345"
-          ) {
-            return {
+          const res = await request(
+            "http://localhost:4000/",
+            queries.LOGIN_USER,
+            {
               email: credentials.email,
-              role: "User",
-            };
+              password: credentials.password,
+            }
+          );
+          if (res.loginUser === null) {
+            return null;
           }
+          return res.loginUser;
         } catch (error) {
-          console.log(error);
+          return null;
         }
-        return null;
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user){
-        token.name = "yash"
-        token.email = user.email
-        token.role = user.role;
+      if (user) {
+        token.fname = user.fname;
+        token.email = user.email;
+        token._id = user._id;
+        token.lname = user.lname;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token){
-        session.user.name = token.name
-        session.user.email = token.email
+      if (token) {
+        session.user.fname = token.fname;
+        session.user.email = token.email;
+        session.user.lname = token.lname;
+        session.user._id = token._id;
       }
       return session;
     },
