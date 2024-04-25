@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
 import { request } from "graphql-request";
 import queries from "../../../../queries";
 
@@ -15,8 +15,8 @@ export async function POST(req) {
       bio: bio,
     });
 
-    return NextResponse.json({ ok: "User registered successfully" });
+    return NextResponse.json({ message: `${res.registerUser.fname} ${res.registerUser.lname} Registered Successfully` }, { status: 200 })
   } catch (e) {
-    return NextResponse.json({ error: e }, { status: 500 });
+    return NextResponse.json({ error: e.response.errors[0].message}, { status: 400 });
   }
 }

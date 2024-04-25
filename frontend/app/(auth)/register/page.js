@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import toast, { Toaster } from 'react-hot-toast';
 
 const RegisterPage = () => {
   const router = useRouter();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     let firstName = e.target.fname.value;
@@ -30,15 +31,25 @@ const RegisterPage = () => {
           bio: bio
         }),
       });
-      if (res.ok) {
-        router.replace("/login");
+      const data = await res.json();
+      if (res.ok)
+      {
+        toast.success(`${data.message} \n Redirecting......`, {
+          duration: 2000
+        });
+        setTimeout(()=>{router.push('/login')},1500);
       }
-    } catch (error) {
-      console.log(error);
+      else{
+        toast.error(data.error)
+        return 
+      }
+   } catch (error) {
+      toast.error(error)
     }
   };
   return (
     <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      <Toaster />
       <div>
         <h2 className="text-center text-xl text-white">
           Already a Member?

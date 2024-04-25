@@ -35,9 +35,25 @@ const REGISTER_USER = gql`
   }
 `;
 
+const GET_USER = gql`
+query Query($userId: String!) {
+  getUser(userId: $userId) {
+    bio
+    _id
+    email
+    fname
+    followers
+    following
+    lname
+    saved
+  }
+}
+`
+
 let exported = {
   LOGIN_USER,
   REGISTER_USER,
+  GET_USER
 };
 
 export default exported;
