@@ -21,7 +21,7 @@ const Login = () => {
       password,
     });
     if (resss.ok) {
-      router.replace("/");
+      router.push("/");
     } else {
       setError("Invalid Email or Password");
       setShowError(true);
