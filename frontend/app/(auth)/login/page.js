@@ -43,6 +43,7 @@ const Login = () => {
               <input
                 type="text"
                 name="email"
+                placeholder="Enter Your Email Here"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
@@ -55,6 +56,7 @@ const Login = () => {
               <input
                 type="password"
                 name="password"
+                placeholder="Enter Your Password Here"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
@@ -76,8 +78,7 @@ const Login = () => {
               href="/register"
               className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
             >
-              {" "}
-              Register{" "}
+              Register
             </a>
           </p>
         </div>
