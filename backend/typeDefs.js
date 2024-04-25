@@ -6,6 +6,7 @@ type User {
     lname: String!
     email: String!
     password: String!
+    bio: String!
     followers: [String!]
     following: [String!]
     saved: [String!]
@@ -20,7 +21,8 @@ type User {
     fname: String!
     lname: String!
     email: String!
-    password: String!): User
+    password: String!
+    bio: String!): User
   }
 
 

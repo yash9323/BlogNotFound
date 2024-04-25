@@ -26,14 +26,14 @@ export const resolvers = {
   },
   Mutation: {
     registerUser: async (_, args) => {
-      let { fname, lname, email, password } = args;
+      let { fname, lname, email, password, bio } = args;
 
       //validate
       const users = await userCollection();
       const user = await users.findOne({ email: email });
       if (user) {
         throw new GraphQLError(`registerUser: This email already exists`, {
-          extensions: { statusCode: 400, code: "INTERNAL_SERVER_ERROR" },
+          extensions: { code: "INTERNAL_SERVER_ERROR", statusCode: 400 },
         });
       }
       const newUser = {
@@ -42,6 +42,7 @@ export const resolvers = {
         lname,
         email,
         password,
+        bio,
         followers: [],
         following: [],
         saved: [],
