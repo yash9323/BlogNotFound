@@ -17,17 +17,20 @@ const REGISTER_USER = gql`
     $lname: String!
     $email: String!
     $password: String!
+    $bio: String!
   ) {
     registerUser(
       fname: $fname
       lname: $lname
       email: $email
       password: $password
+      bio: $bio
     ) {
       _id
       email
       fname
       lname
+      bio
     }
   }
 `;

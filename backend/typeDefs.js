@@ -24,8 +24,4 @@ type User {
     password: String!
     bio: String!): User
   }
-
-
-
-
 `;
