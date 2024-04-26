@@ -68,6 +68,10 @@ export const resolvers = {
       const matchedUsers = Array.from(matchedUsersSet);
       return matchedUsers;
     },
+    getAllBlogs: async (_,args) => {
+      const blogs = await blogCollection()
+      return await blogs.find().toArray()
+    },
     getBlog: async (_, args) => {
       let { blogId } = args;
 

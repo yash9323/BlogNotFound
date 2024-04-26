@@ -31,11 +31,11 @@ type User {
     date: Date!
   }
 
-
   type Query {
     loginUser(email: String!, password: String): User
     getUser(userId: String!): User
     searchUserByName(searchTerm: String!): [User]
+    getAllBlogs: [Blog]
     getBlog(blogId: String!): Blog
     getBlogsByUserId(userId: String!): [Blog]
     getBlogsByFollowing(userId: String!): [Blog]

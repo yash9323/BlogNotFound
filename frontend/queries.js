@@ -50,10 +50,56 @@ query Query($userId: String!) {
 }
 `
 
+const CREATE_BLOG = gql`
+mutation Mutation($title: String!, $content: String!, $userId: String!) {
+  createBlog(title: $title, content: $content, userId: $userId) {
+    _id
+    content
+    date
+    likes
+    title
+    userId
+  }
+}
+`
+const EDIT_USER = gql`
+mutation Mutation($id: String!, $fname: String, $lname: String, $email: String, $password: String, $bio: String) {
+  editUser(_id: $id, fname: $fname, lname: $lname, email: $email, password: $password, bio: $bio) {
+    _id
+    bio
+    email
+    fname
+    lname
+    password
+    followers
+    following
+    saved
+  }
+}
+
+`
+
+
+const GET_ALL_BLOGS = gql`
+query Query {
+  getAllBlogs {
+    _id
+    title
+    content
+    date
+    likes
+    userId
+  }
+}
+`
+
 let exported = {
   LOGIN_USER,
   REGISTER_USER,
-  GET_USER
+  GET_USER,
+  CREATE_BLOG,
+  GET_ALL_BLOGS,
+  EDIT_USER,
 };
 
 export default exported;
