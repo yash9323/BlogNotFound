@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 
 const RegisterPage = () => {
   const router = useRouter();
@@ -9,7 +9,7 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let firstName = e.target.fname.value;
-    let lastName = e.target.fname.value;
+    let lastName = e.target.lname.value;
     let email = e.target.email.value;
     let bio = e.target.bio.value;
     let password = e.target.password.value;
@@ -28,23 +28,23 @@ const RegisterPage = () => {
           confirmPassword: confirm_password,
           firstName: firstName,
           lastName: lastName,
-          bio: bio
+          bio: bio,
         }),
       });
       const data = await res.json();
-      if (res.ok)
-      {
+      if (res.ok) {
         toast.success(`${data.message} \n Redirecting......`, {
-          duration: 2000
+          duration: 2000,
         });
-        setTimeout(()=>{router.push('/login')},1500);
+        setTimeout(() => {
+          router.push("/login");
+        }, 1500);
+      } else {
+        toast.error(data.error);
+        return;
       }
-      else{
-        toast.error(data.error)
-        return 
-      }
-   } catch (error) {
-      toast.error(error)
+    } catch (error) {
+      toast.error(error);
     }
   };
   return (
@@ -99,7 +99,8 @@ const RegisterPage = () => {
             <div className="mt-2">
               <textarea
                 name="bio"
-                rows="4" cols="50"
+                rows="4"
+                cols="50"
                 placeholder="Enter Your Bio Here"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
@@ -149,7 +150,7 @@ const RegisterPage = () => {
               type="submit"
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-               <t/> Register
+              Register
             </button>
           </div>
         </form>
