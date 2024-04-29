@@ -26,7 +26,7 @@ type User {
   type Comment{
     _id: String
     blogId: String!
-    userId: String!
+    user: User
     comment: String!
     date: Date!
   }

@@ -156,6 +156,38 @@ const UNLIKE_BLOG = gql`
   }
 `;
 
+const SAVE_BLOG = gql`
+  mutation Mutation($blogId: String!, $userId: String!) {
+    saveBlog(blogId: $blogId, userId: $userId) {
+      _id
+      bio
+      email
+      fname
+      followers
+      following
+      lname
+      password
+      saved
+    }
+  }
+`;
+
+const UNSAVE_BLOG = gql`
+  mutation Mutation($blogId: String!, $userId: String!) {
+    unsaveBlog(blogId: $blogId, userId: $userId) {
+      _id
+      bio
+      email
+      fname
+      followers
+      following
+      password
+      lname
+      saved
+    }
+  }
+`;
+
 const CREATE_COMMENT = gql`
   mutation Mutation($blogId: String!, $userId: String!, $comment: String!) {
     createComment(blogId: $blogId, userId: $userId, comment: $comment) {
@@ -163,7 +195,17 @@ const CREATE_COMMENT = gql`
       blogId
       comment
       date
-      userId
+      user {
+        _id
+        bio
+        email
+        fname
+        followers
+        following
+        lname
+        password
+        saved
+      }
     }
   }
 `;
@@ -175,7 +217,39 @@ const GET_COMMENTS_BY_BLOG_ID = gql`
       blogId
       comment
       date
-      userId
+      user {
+        _id
+        bio
+        email
+        fname
+        followers
+        following
+        lname
+        password
+        saved
+      }
+    }
+  }
+`;
+
+const DELETE_COMMMENT = gql`
+  mutation Mutation($commentId: String!) {
+    removeComment(commentId: $commentId) {
+      _id
+      blogId
+      comment
+      date
+      user {
+        _id
+        bio
+        email
+        fname
+        followers
+        following
+        lname
+        password
+        saved
+      }
     }
   }
 `;
@@ -189,10 +263,13 @@ let exported = {
   GET_SAVED_BLOGS,
   LIKE_BLOG,
   UNLIKE_BLOG,
+  SAVE_BLOG,
+  UNSAVE_BLOG,
   CREATE_BLOG,
   EDIT_USER,
   CREATE_COMMENT,
   GET_COMMENTS_BY_BLOG_ID,
+  DELETE_COMMMENT,
 };
 
 export default exported;

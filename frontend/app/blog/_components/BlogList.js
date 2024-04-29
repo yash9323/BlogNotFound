@@ -3,7 +3,6 @@ import React from "react";
 const BlogList = ({ data }) => {
   return (
     <div>
-      <h1>Saved Blogs</h1>
       {data
         .slice()
         .reverse()

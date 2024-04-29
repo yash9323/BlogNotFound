@@ -1,25 +1,29 @@
 import { useState, useEffect } from "react";
 import queries from "../../../queries";
-import { useSession } from "next-auth/react";
 import { request } from "graphql-request";
 import { useRouter } from "next/navigation";
 import NewComment from "./NewComment";
 
-const BlogPostCard = ({ blogData, authorData }) => {
-  const router = useRouter();
-  const { data: session } = useSession();
+const BlogPostCard = ({ blogData, authorData, userData }) => {
   const [userId, setUserId] = useState("");
   const [isLiked, setIsLiked] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const [likesCount, setLikesCount] = useState(blogData.likes.length);
 
   useEffect(() => {
-    if (session) {
-      setIsLiked(blogData.likes.includes(session.user?._id));
-      setUserId(session.user?._id);
+    {
+      setIsLiked(blogData.likes.includes(userData._id));
+      setUserId(userData._id);
+      setIsSaved(userData.saved.includes(blogData._id));
     }
-  }, [session, blogData]);
+  }, [userData, blogData]);
 
   const handleLikeUnlike = async () => {
+    if (!userId) {
+      console.error("User ID not set.");
+      return;
+    }
+
     const mutation = isLiked ? queries.UNLIKE_BLOG : queries.LIKE_BLOG;
     const variables = { blogId: blogData._id, userId };
 
@@ -28,7 +32,24 @@ const BlogPostCard = ({ blogData, authorData }) => {
       setIsLiked(!isLiked);
       setLikesCount((prevCount) => (isLiked ? prevCount - 1 : prevCount + 1));
     } catch (error) {
-      console.error(error);
+      console.error("Error in like/unlike operation:", error);
+    }
+  };
+
+  const handleSaveUnsave = async () => {
+    if (!userId) {
+      console.error("User ID not set.");
+      return;
+    }
+
+    const mutation = isSaved ? queries.UNSAVE_BLOG : queries.SAVE_BLOG;
+    const variables = { blogId: blogData._id, userId };
+
+    try {
+      const res = await request("http://localhost:4000/", mutation, variables);
+      setIsSaved(!isSaved);
+    } catch (error) {
+      console.error("Error in save/unsave operation:", error);
     }
   };
 
@@ -47,8 +68,11 @@ const BlogPostCard = ({ blogData, authorData }) => {
         <button onClick={handleLikeUnlike}>
           {isLiked ? "Unlike" : "Like"}
         </button>
+        <button onClick={handleSaveUnsave}>
+          {isSaved ? "Unsave" : "Save"}
+        </button>
       </div>
-      <NewComment blogId={blogData._id} userId={userId} />
+      <NewComment blogData={blogData} userData={userData} />
     </>
   );
 };

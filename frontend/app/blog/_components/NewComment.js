@@ -1,10 +1,16 @@
 import { useState, useEffect } from "react";
 import { request } from "graphql-request";
 import queries from "../../../queries";
+import DeleteComment from "./DeleteComment";
+import { useRouter } from "next/navigation";
 
-const NewComment = ({ blogId, userId }) => {
+const NewComment = ({ blogData, userData }) => {
   const [comment, setComment] = useState("");
   const [allComments, setAllComments] = useState([]);
+  const router = useRouter();
+
+  console.log("blogData", blogData);
+  console.log("userData", userData);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -13,10 +19,9 @@ const NewComment = ({ blogId, userId }) => {
           "http://localhost:4000/",
           queries.GET_COMMENTS_BY_BLOG_ID,
           {
-            blogId: blogId,
+            blogId: blogData._id,
           }
         );
-        console.log(res);
         setAllComments(res.getCommentsByBlogId);
       } catch (error) {
         console.error(error);
@@ -24,19 +29,18 @@ const NewComment = ({ blogId, userId }) => {
     };
 
     fetchData();
-  }, [comment, blogId]);
+  }, [comment, blogData]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(comment);
 
     try {
       const res = await request(
         "http://localhost:4000/",
         queries.CREATE_COMMENT,
         {
-          blogId: blogId,
-          userId: userId,
+          blogId: blogData._id,
+          userId: userData._id,
           comment: comment,
         }
       );
@@ -65,12 +69,18 @@ const NewComment = ({ blogId, userId }) => {
         <button type="submit">Add</button>
       </form>
       <div>
+        {console.log(allComments)}
         {allComments
           .slice()
           .reverse()
           .map((comment, index) => (
             <h3 key={index}>
-              {comment.comment} {comment.date.toString()}{" "}
+              {comment.comment} {comment.date.toString()} {comment.user.fname}{" "}
+              {comment.user.lname}
+              <DeleteComment
+                commentId={comment._id}
+                setAllComments={setAllComments}
+              />
             </h3>
           ))}
       </div>

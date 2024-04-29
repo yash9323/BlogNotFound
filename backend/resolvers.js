@@ -68,9 +68,9 @@ export const resolvers = {
       const matchedUsers = Array.from(matchedUsersSet);
       return matchedUsers;
     },
-    getAllBlogs: async (_,args) => {
-      const blogs = await blogCollection()
-      return await blogs.find().toArray()
+    getAllBlogs: async (_, args) => {
+      const blogs = await blogCollection();
+      return await blogs.find().toArray();
     },
     getBlog: async (_, args) => {
       let { blogId } = args;
@@ -148,6 +148,7 @@ export const resolvers = {
     getCommentsByBlogId: async (_, args) => {
       let { blogId } = args;
 
+      console.log("here in the getCommentsByBlogId");
       //validate
 
       const comments = await commentCollection();
@@ -626,11 +627,13 @@ export const resolvers = {
       //validate
 
       const comments = await commentCollection();
+      const users = await userCollection();
+      const user = await users.findOne({ _id: userId });
 
       const newComment = {
         _id: uuid(),
         blogId,
-        userId,
+        user,
         comment,
         date: new Date(),
       };
