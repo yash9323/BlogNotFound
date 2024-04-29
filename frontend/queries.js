@@ -130,6 +130,19 @@ const GET_SAVED_BLOGS = gql`
   }
 `;
 
+const GET_BLOGS_BY_USER_ID = gql`
+  query Query($userId: String!) {
+    getBlogsByUserId(userId: $userId) {
+      _id
+      content
+      date
+      likes
+      title
+      userId
+    }
+  }
+`;
+
 const LIKE_BLOG = gql`
   mutation Mutation($blogId: String!, $userId: String!) {
     likeBlog(blogId: $blogId, userId: $userId) {
@@ -261,6 +274,7 @@ let exported = {
   GET_BLOG,
   GET_ALL_BLOGS,
   GET_SAVED_BLOGS,
+  GET_BLOGS_BY_USER_ID,
   LIKE_BLOG,
   UNLIKE_BLOG,
   SAVE_BLOG,

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import queries from "../../../queries";
 import { request } from "graphql-request";
-import { useRouter } from "next/navigation";
 import NewComment from "./NewComment";
+import EditBlog from "./EditBlog";
 
 const BlogPostCard = ({ blogData, authorData, userData }) => {
   const [userId, setUserId] = useState("");
@@ -71,6 +71,7 @@ const BlogPostCard = ({ blogData, authorData, userData }) => {
         <button onClick={handleSaveUnsave}>
           {isSaved ? "Unsave" : "Save"}
         </button>
+        {authorData._id === userData._id && <button>Edit</button>}
       </div>
       <NewComment blogData={blogData} userData={userData} />
     </>

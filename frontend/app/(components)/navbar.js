@@ -14,6 +14,14 @@ const Navbar = () => {
           </h1>
         </a>
         <div className="flex items-center justify-center gap-4">
+          <a href="/myblogs">
+            <h1 className="text-center text-2xl font-bold leading-9 tracking-tight text-white">
+              My Blogs
+            </h1>
+          </a>
+          <h1 className="text-center text-2xl font-bold leading-9 tracking-tight text-white">
+            |
+          </h1>
           <a href="/saved">
             <h1 className="text-center text-2xl font-bold leading-9 tracking-tight text-white">
               Saved

@@ -148,7 +148,6 @@ export const resolvers = {
     getCommentsByBlogId: async (_, args) => {
       let { blogId } = args;
 
-      console.log("here in the getCommentsByBlogId");
       //validate
 
       const comments = await commentCollection();
