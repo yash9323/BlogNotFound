@@ -41,7 +41,6 @@ const UserCard = ({ data }) => {
     try {
       const res = await request(graphqlEndpoint, mutation, variables);
       setIsFollowed(!isFollowed);
-      // Update followers count after successful follow/unfollow
       setFollowersCount((prevCount) =>
         isFollowed ? prevCount - 1 : prevCount + 1
       );

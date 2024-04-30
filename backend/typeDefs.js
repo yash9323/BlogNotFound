@@ -16,6 +16,7 @@ type User {
 
   type Blog {
     _id: String!
+    image: String!
     title: String!
     content: String!
     date: Date!
@@ -69,6 +70,7 @@ type User {
     
     createBlog(
       title: String!
+      image: String!
       content: String!
       userId: String! ): Blog
     

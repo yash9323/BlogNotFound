@@ -371,13 +371,14 @@ export const resolvers = {
       return updateSelfAfter;
     },
     createBlog: async (_, args) => {
-      let { title, content, userId } = args;
+      let { title, image, content, userId } = args;
       // validate
 
       const blogs = await blogCollection();
 
       const newBlog = {
         _id: uuid(),
+        image,
         title,
         content,
         date: new Date(),
