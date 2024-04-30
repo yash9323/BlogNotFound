@@ -26,6 +26,12 @@ const Navbar = () => {
                 My&nbsp;Blogs
             </a>
         </div>
+        <a href="/createblog" className='flex text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2'>
+          Create&nbsp;Blog
+        </a>
+        <a href="/findpeople" className='flex text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2'>
+          Find&nbsp;People
+        </a>
           <a href="/profile">
             <h1 className="text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2">
               Profile
