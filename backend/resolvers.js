@@ -47,6 +47,10 @@ export const resolvers = {
 
       let { searchTerm } = args;
 
+      if (!searchTerm) {
+        return [];
+      }
+
       searchTerm = searchTerm.toLowerCase();
 
       const users = await userCollection();

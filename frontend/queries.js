@@ -267,9 +267,58 @@ const DELETE_COMMMENT = gql`
   }
 `;
 
+const FOLLOW_USER = gql`
+  mutation Mutation($selfId: String!, $userToFollowId: String!) {
+    followUser(selfId: $selfId, userToFollowId: $userToFollowId) {
+      _id
+      bio
+      email
+      fname
+      followers
+      following
+      lname
+      password
+      saved
+    }
+  }
+`;
+
+const UNFOLLOW_USER = gql`
+  mutation Mutation($selfId: String!, $userToUnfollowId: String!) {
+    unfollowUser(selfId: $selfId, userToUnfollowId: $userToUnfollowId) {
+      _id
+      bio
+      email
+      fname
+      followers
+      following
+      lname
+      password
+      saved
+    }
+  }
+`;
+
+const SEARCH_USER_BY_NAME = gql`
+  query Query($searchTerm: String!) {
+    searchUserByName(searchTerm: $searchTerm) {
+      _id
+      bio
+      email
+      fname
+      followers
+      following
+      lname
+      password
+      saved
+    }
+  }
+`;
 let exported = {
   LOGIN_USER,
   REGISTER_USER,
+  FOLLOW_USER,
+  UNFOLLOW_USER,
   GET_USER,
   GET_BLOG,
   GET_ALL_BLOGS,
@@ -284,6 +333,7 @@ let exported = {
   CREATE_COMMENT,
   GET_COMMENTS_BY_BLOG_ID,
   DELETE_COMMMENT,
+  SEARCH_USER_BY_NAME,
 };
 
 export default exported;
