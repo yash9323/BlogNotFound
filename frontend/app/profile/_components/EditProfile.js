@@ -25,7 +25,7 @@ const EditProfile = ({ data }) => {
       });
       if (res.ok) {
         router.refresh();
-        router.push(`/profile?updated`);
+        router.push(`/profile?${Math.random().toString()}`);
       }
     } catch (error) {
       console.log(error);

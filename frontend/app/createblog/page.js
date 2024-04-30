@@ -63,7 +63,6 @@ const Page = () => {
             <Editor
               value={text}
               onTextChange={(e) => {
-                console.log(e.htmlValue);
                 setText(e.htmlValue);
               }}
               style={{ height: "320px" }}

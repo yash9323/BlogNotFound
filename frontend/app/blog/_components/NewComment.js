@@ -7,10 +7,6 @@ import { useRouter } from "next/navigation";
 const NewComment = ({ blogData, userData }) => {
   const [comment, setComment] = useState("");
   const [allComments, setAllComments] = useState([]);
-  const router = useRouter();
-
-  console.log("blogData", blogData);
-  console.log("userData", userData);
 
   useEffect(() => {
     const fetchData = async () => {
