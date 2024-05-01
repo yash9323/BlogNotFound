@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Login = () => {
   const router = useRouter();
@@ -74,12 +75,12 @@ const Login = () => {
         <div>
           <p className="mt-10 text-center text-sm text-white">
             Not a member?
-            <a
+            <Link
               href="/register"
               className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
             >
-               Register
-            </a>
+              Register
+            </Link>
           </p>
         </div>
       </div>

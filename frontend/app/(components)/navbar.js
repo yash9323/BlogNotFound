@@ -2,6 +2,7 @@
 import React from "react";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 const Navbar = () => {
   const { data: session, status } = useSession();
@@ -9,34 +10,38 @@ const Navbar = () => {
     return (
       <div className="mt-5 ml-5 mr-5 flex justify-between items-center">
         <div>
-          <a href="/">
+          <Link href="/">
             <h1 className="mt-2 text-center text-2xl font-bold leading-9 tracking-tight text-white">
               &lt; BLOG NOT FOUND /&gt;
             </h1>
-          </a>
+          </Link>
         </div>
         <div className="flex items-center justify-center">
-        <a href="/saved">
+          <Link href="/saved">
             <h1 className="text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2">
               Saved
             </h1>
-          </a>
-        <div className="flex text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2">
-            <a href="/myblogs">
-                My&nbsp;Blogs
-            </a>
-        </div>
-        <a href="/createblog" className='flex text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2'>
-          Create&nbsp;Blog
-        </a>
-        <a href="/findpeople" className='flex text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2'>
-          Find&nbsp;People
-        </a>
-          <a href="/profile">
+          </Link>
+          <div className="flex text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2">
+            <Link href="/myblogs">My&nbsp;Blogs</Link>
+          </div>
+          <Link
+            href="/createblog"
+            className="flex text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2"
+          >
+            Create&nbsp;Blog
+          </Link>
+          <Link
+            href="/findpeople"
+            className="flex text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2"
+          >
+            Find&nbsp;People
+          </Link>
+          <Link href="/profile">
             <h1 className="text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2">
               Profile
             </h1>
-          </a>
+          </Link>
           <button
             onClick={() => signOut()}
             className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ml-2"

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
+import Link from "next/link";
 
 const RegisterPage = () => {
   const router = useRouter();
@@ -53,12 +54,12 @@ const RegisterPage = () => {
       <div>
         <h2 className="text-center text-xl text-white">
           Already a Member?
-          <a
+          <Link
             href="/login"
             className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
           >
             Login
-          </a>
+          </Link>
         </h2>
       </div>
       <h3 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">
