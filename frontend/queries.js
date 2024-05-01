@@ -58,19 +58,21 @@ const GET_BLOG = gql`
       likes
       title
       userId
+      image
     }
   }
 `;
 
 const CREATE_BLOG = gql`
-  mutation Mutation($title: String!, $content: String!, $userId: String!) {
-    createBlog(title: $title, content: $content, userId: $userId) {
+  mutation Mutation($title: String!, $content: String!, $userId: String!, $image: String!) {
+    createBlog(title: $title, content: $content, userId: $userId, image: $image) {
       _id
       content
       date
       likes
       title
       userId
+      image
     }
   }
 `;

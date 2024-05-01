@@ -40,7 +40,6 @@ const NewComment = ({ blogData, userData }) => {
           comment: comment,
         }
       );
-      console.log(res);
     } catch (error) {
       console.error(error);
     }

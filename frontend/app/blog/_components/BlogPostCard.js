@@ -56,6 +56,7 @@ const BlogPostCard = ({ blogData, authorData, userData }) => {
   return (
     <>
       <div className="mt-10 ml-5 mr-5 flex flex-col bg-gray-800 rounded-xl p-10 shadow-md">
+        <img src={blogData.image}/>
         <h1>{blogData.title}</h1>
         <h3>{blogData.content}</h3>
         <h5>{blogData.date}</h5>
