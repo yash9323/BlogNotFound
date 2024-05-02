@@ -441,6 +441,7 @@ export const resolvers = {
 
       const blogs = await blogCollection();
       const users = await userCollection();
+      const comments = await commentCollection();
 
       const blog = await blogs.findOne({ _id: _id });
       if (!blog) {
@@ -452,15 +453,29 @@ export const resolvers = {
         );
       }
 
-      const updateUser = await users.updateMany(
-        { saved: _id },
-        { $pull: { saved: _id } }
-      );
+      const usersWithSavedBlog = await users.find({ saved: _id });
+      if (usersWithSavedBlog.length > 0) {
+        const updateUser = await users.updateMany(
+          { saved: _id },
+          { $pull: { saved: _id } }
+        );
 
-      if (updateUser.modifiedCount === 0) {
-        throw new GraphQLError("removeBlog: Could not update users", {
-          extensions: { code: "INTERNAL_SERVER_ERROR", statusCode: 500 },
-        });
+        if (updateUser.modifiedCount === 0) {
+          throw new GraphQLError("removeBlog: Could not update users", {
+            extensions: { code: "INTERNAL_SERVER_ERROR", statusCode: 500 },
+          });
+        }
+      }
+
+      const blogComments = await comments.find({ blogId: _id });
+      if (blogComments.length > 0) {
+        const deleteComments = await comments.deleteMany({ blogId: _id });
+
+        if (deleteComments.deletedCount === 0) {
+          throw new GraphQLError("removeBlog: Could not delete comments", {
+            extensions: { code: "INTERNAL_SERVER_ERROR", statusCode: 500 },
+          });
+        }
       }
 
       const removeBlog = await blogs.deleteOne({ _id: _id });
@@ -473,6 +488,7 @@ export const resolvers = {
 
       return blog;
     },
+
     saveBlog: async (_, args) => {
       let { blogId, userId } = args;
 

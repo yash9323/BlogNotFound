@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import queries from "../../../queries";
 import { request } from "graphql-request";
 import NewComment from "./NewComment";
-import EditBlog from "./EditBlog";
 import ReactQuill from "react-quill";
 import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
 import { CiBookmark, CiBookmarkCheck } from "react-icons/ci";
 import { FaRegEdit } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 const BlogPostCard = ({ blogData, authorData, userData }) => {
   const modules = {
@@ -82,6 +82,10 @@ const BlogPostCard = ({ blogData, authorData, userData }) => {
     }
   };
 
+  const handleEdit = () => {
+    router.push(`/blog/edit/${blogData._id}`);
+  };
+
   return (
     <div className="mt-5 ml-5 mr-5 flex flex-col rounded-xl p-10 shadow-md">
       <link
@@ -109,10 +113,20 @@ const BlogPostCard = ({ blogData, authorData, userData }) => {
             <AiOutlineLike size={30} />
           )}
         </button>
-        <button onClick={handleSaveUnsave} className="w-20">
+        <button onClick={handleSaveUnsave} className="">
           {isSaved ? <CiBookmarkCheck size={30} /> : <CiBookmark size={30} />}
         </button>
-        <div>{authorData._id === userData._id && <FaRegEdit size={30} />}</div>
+        <div>
+          {authorData._id === userData._id && (
+            <button onClick={handleEdit}>
+              <FaRegEdit size={30} />
+            </button>
+          )}
+        </div>
+
+        <button onClick={handleDelete}>
+          {authorData._id === userData._id && <RiDeleteBin6Line size={30} />}
+        </button>
       </div>
       <div className="text-sm">
         <h5>Written on: {blogData.date}</h5>
@@ -125,7 +139,11 @@ const BlogPostCard = ({ blogData, authorData, userData }) => {
       <h1 className="mt-2 text-center text-xl font-bold leading-9 tracking-tight text-white">
         &lt; Comment Section /&gt;
       </h1>
-      <NewComment blogData={blogData} userData={userData} />
+      <NewComment
+        blogData={blogData}
+        authorData={authorData}
+        userData={userData}
+      />
     </div>
   );
 };

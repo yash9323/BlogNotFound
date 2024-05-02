@@ -4,7 +4,7 @@ import queries from "../../../queries";
 import DeleteComment from "./DeleteComment";
 import { useRouter } from "next/navigation";
 
-const NewComment = ({ blogData, userData }) => {
+const NewComment = ({ blogData, authorData, userData }) => {
   const [comment, setComment] = useState("");
   const [allComments, setAllComments] = useState([]);
 
@@ -52,7 +52,10 @@ const NewComment = ({ blogData, userData }) => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className="mt-7 flex items-center justify-center gap-2">
+      <form
+        onSubmit={handleSubmit}
+        className="mt-7 flex items-center justify-center gap-2"
+      >
         <input
           className="block w-full sm:w-3/4 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           name="comment"
@@ -73,16 +76,24 @@ const NewComment = ({ blogData, userData }) => {
           .slice()
           .reverse()
           .map((comment, index) => (
-            <div key={index} className="flex items-center justify-between mt-5 pb-5 border-b-2 border-white">
-                <div>
-                  <h1 className="text-xs">{comment.user.fname} commented on {comment.date.toString()}:</h1>
-                  <h1 className="ml-4 mt-2">{comment.comment}</h1>
-                </div>
-                <div>
+            <div
+              key={index}
+              className="flex items-center justify-between mt-5 pb-5 border-b-2 border-white"
+            >
+              <div>
+                <h1 className="text-xs">
+                  {comment.user.fname} commented on {comment.date.toString()}:
+                </h1>
+                <h1 className="ml-4 mt-2">{comment.comment}</h1>
+              </div>
+              <div>
+                {comment.user._id === userData._id && (
                   <DeleteComment
-                  commentId={comment._id}
-                  setAllComments={setAllComments}/>
-                </div>
+                    commentId={comment._id}
+                    setAllComments={setAllComments}
+                  />
+                )}
+              </div>
             </div>
           ))}
       </div>
@@ -92,8 +103,10 @@ const NewComment = ({ blogData, userData }) => {
 
 export default NewComment;
 
-{/* <h3 key={index}>
+{
+  /* <h3 key={index}>
               {comment.comment} {comment.date.toString()} {comment.user.fname}{" "}
               {comment.user.lname}
              
-            </h3> */}
+            </h3> */
+}
