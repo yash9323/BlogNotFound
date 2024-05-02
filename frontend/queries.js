@@ -64,8 +64,18 @@ const GET_BLOG = gql`
 `;
 
 const CREATE_BLOG = gql`
-  mutation Mutation($title: String!, $content: String!, $userId: String!, $image: String!) {
-    createBlog(title: $title, content: $content, userId: $userId, image: $image) {
+  mutation Mutation(
+    $title: String!
+    $content: String!
+    $userId: String!
+    $image: String!
+  ) {
+    createBlog(
+      title: $title
+      content: $content
+      userId: $userId
+      image: $image
+    ) {
       _id
       content
       date
@@ -207,6 +217,20 @@ const UNSAVE_BLOG = gql`
   }
 `;
 
+const DELETE_BLOG = gql`
+  mutation Mutation($id: String!) {
+    removeBlog(_id: $id) {
+      _id
+      content
+      date
+      image
+      likes
+      title
+      userId
+    }
+  }
+`;
+
 const CREATE_COMMENT = gql`
   mutation Mutation($blogId: String!, $userId: String!, $comment: String!) {
     createComment(blogId: $blogId, userId: $userId, comment: $comment) {
@@ -335,6 +359,7 @@ let exported = {
   SAVE_BLOG,
   UNSAVE_BLOG,
   CREATE_BLOG,
+  DELETE_BLOG,
   EDIT_USER,
   CREATE_COMMENT,
   GET_COMMENTS_BY_BLOG_ID,

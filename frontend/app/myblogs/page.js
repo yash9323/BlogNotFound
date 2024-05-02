@@ -7,13 +7,20 @@ import BlogList from "../blog/_components/BlogList";
 
 const Page = async () => {
   const session = await getServerSession(options);
-  const res = await request(
-    "http://localhost:4000/",
-    queries.GET_BLOGS_BY_USER_ID,
-    {
-      userId: session.user._id,
-    }
-  );
+  let res = null;
+  if (session) {
+    res = await request(
+      "http://localhost:4000/",
+      queries.GET_BLOGS_BY_USER_ID,
+      {
+        userId: session.user._id,
+      }
+    );
+  }
+
+  if (!res) {
+    return <h1>Error while fetching blogs</h1>;
+  }
   return (
     <div className="mt-10">
       <h1 className="mt-2 text-center text-2xl font-bold leading-9 tracking-tight text-white">

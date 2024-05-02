@@ -440,6 +440,7 @@ export const resolvers = {
       let { _id } = args;
 
       const blogs = await blogCollection();
+      const users = await userCollection();
 
       const blog = await blogs.findOne({ _id: _id });
       if (!blog) {
@@ -450,6 +451,18 @@ export const resolvers = {
           }
         );
       }
+
+      const updateUser = await users.updateMany(
+        { saved: _id },
+        { $pull: { saved: _id } }
+      );
+
+      if (updateUser.modifiedCount === 0) {
+        throw new GraphQLError("removeBlog: Could not update users", {
+          extensions: { code: "INTERNAL_SERVER_ERROR", statusCode: 500 },
+        });
+      }
+
       const removeBlog = await blogs.deleteOne({ _id: _id });
 
       if (removeBlog.deletedCount === 0) {
