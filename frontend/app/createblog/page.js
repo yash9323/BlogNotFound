@@ -11,6 +11,7 @@ const Page = () => {
   const router = useRouter();
   const [text, setText] = useState("");
   const [image,setImage] = useState(null);
+
   const renderHeader = () => {
     return (
         <span className="ql-formats">
@@ -24,7 +25,7 @@ const Page = () => {
 const header = renderHeader();
 
   const handleimagechange = (e) => {
-    setImage(e.target.files[0]);
+      setImage(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
@@ -68,10 +69,14 @@ const header = renderHeader();
           <div>
           {image && (
             <div>
-              <h1>
-                Image Preview 
-              </h1>
-              <Image src={URL.createObjectURL(image)} width={250} height={150} alt="" />
+              <h1>Blog Cover Image Preview: </h1>
+              <Image
+                width={200}
+                height={200}
+                src={URL.createObjectURL(image)}
+                alt=""
+                className="mt-5 w-full h-56 aspect-ratio aspect-square object-cover"
+              />
             </div>
           )}
           <label className="mt-5 block text-sm font-medium leading-6 text-white">

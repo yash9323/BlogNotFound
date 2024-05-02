@@ -2,6 +2,7 @@
 import React, { useContext } from "react";
 import { request } from "graphql-request";
 import queries from "../../../queries";
+import { MdOutlineDelete } from "react-icons/md";
 
 const DeleteComment = ({ commentId, setAllComments }) => {
   const handleDelete = async (event) => {
@@ -23,7 +24,7 @@ const DeleteComment = ({ commentId, setAllComments }) => {
     }
   };
 
-  return <button onClick={handleDelete}>Delete</button>;
+  return <button onClick={handleDelete}><MdOutlineDelete size={20}/></button>;
 };
 
 export default DeleteComment;

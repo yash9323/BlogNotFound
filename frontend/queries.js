@@ -76,6 +76,7 @@ const CREATE_BLOG = gql`
     }
   }
 `;
+
 const EDIT_USER = gql`
   mutation Mutation(
     $id: String!
@@ -107,16 +108,17 @@ const EDIT_USER = gql`
 `;
 
 const GET_ALL_BLOGS = gql`
-  query Query {
-    getAllBlogs {
-      _id
-      title
-      content
-      date
-      likes
-      userId
-    }
+query GetAllBlogs {
+  getAllBlogs {
+    userId
+    title
+    image
+    likes
+    date
+    content
+    _id
   }
+}
 `;
 
 const GET_SAVED_BLOGS = gql`
@@ -128,6 +130,7 @@ const GET_SAVED_BLOGS = gql`
       likes
       title
       userId
+      image
     }
   }
 `;
@@ -141,6 +144,7 @@ const GET_BLOGS_BY_USER_ID = gql`
       likes
       title
       userId
+      image
     }
   }
 `;

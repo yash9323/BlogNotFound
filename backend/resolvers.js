@@ -89,7 +89,6 @@ export const resolvers = {
           extensions: { code: "NOT_FOUND", statusCode: 404 },
         });
       }
-
       return blog;
     },
     getBlogsByUserId: async (_, args) => {

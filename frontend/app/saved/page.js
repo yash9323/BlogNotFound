@@ -1,9 +1,9 @@
 import React from 'react';
 import queries from "../../queries"
 import { request } from "graphql-request";
+import BlogList from './_components/BlogList';
 import { getServerSession } from "next-auth/next";
 import { options } from "../api/auth/[...nextauth]/options";
-import BlogList from './_components/BlogList';
 
 const Page = async () => {
   const session = await getServerSession(options);
@@ -12,7 +12,10 @@ const Page = async () => {
   });
   if (res.getSavedBlogs){
     return (
-      <div>
+      <div className='mt-10'>
+        <h1 className="mt-2 text-center text-2xl font-bold leading-9 tracking-tight text-white">
+              &lt; Saved Blogs /&gt;
+        </h1>
         <BlogList data={res.getSavedBlogs}/>
       </div>
     );
