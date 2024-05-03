@@ -23,6 +23,9 @@ const Navbar = () => {
             </h1>
           </Link>
           <div className="flex text-center text-2xl font-bold leading-9 tracking-tight text-white">
+            <Link href="/fromfollowing">From&nbsp;Following</Link>
+          </div>
+          <div className="flex text-center text-2xl font-bold leading-9 tracking-tight text-white">
             <Link href="/myblogs">My&nbsp;Blogs</Link>
           </div>
           <Link

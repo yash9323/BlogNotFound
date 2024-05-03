@@ -35,7 +35,7 @@ type User {
   type Query {
     loginUser(email: String!, password: String): User
     getUser(userId: String!): User
-    searchUserByName(searchTerm: String!): [User]
+    searchUserByName(selfId: String!, searchTerm: String!): [User]
     getAllBlogs: [Blog]
     getBlog(blogId: String!): Blog
     getBlogsByUserId(userId: String!): [Blog]

@@ -28,7 +28,7 @@ const EditProfile = ({ data }) => {
         router.push(`/profile?${Math.random().toString()}`);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
   return (

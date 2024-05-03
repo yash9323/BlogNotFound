@@ -11,7 +11,7 @@ const Page = async () => {
   if (session) {
     res = await request(
       "http://localhost:4000/",
-      queries.GET_BLOGS_BY_USER_ID,
+      queries.GET_BLOGS_BY_FOLLOWING,
       {
         userId: session.user._id,
       }
@@ -24,9 +24,13 @@ const Page = async () => {
   return (
     <div className="mt-10">
       <h1 className="mt-2 text-center text-2xl font-bold leading-9 tracking-tight text-white">
-        &lt; Your Blogs /&gt;
+        &lt; Blogs from people you follow /&gt;
       </h1>
-      <BlogList data={res.getBlogsByUserId} />
+      {res.getBlogsByFollowing.length === 0 ? (
+        "No Blogs found"
+      ) : (
+        <BlogList data={res.getBlogsByFollowing} />
+      )}
     </div>
   );
 };

@@ -43,9 +43,8 @@ export const resolvers = {
       return user;
     },
     searchUserByName: async (_, args) => {
-      // validate
-
-      let { searchTerm } = args;
+      // Validate
+      let { selfId, searchTerm } = args;
 
       if (!searchTerm) {
         return [];
@@ -54,7 +53,6 @@ export const resolvers = {
       searchTerm = searchTerm.toLowerCase();
 
       const users = await userCollection();
-
       const allUsers = await users.find().toArray();
 
       const matchedUsersSet = new Set();
@@ -62,13 +60,15 @@ export const resolvers = {
       allUsers.forEach((user) => {
         const fnameLower = user.fname.toLowerCase();
         const lnameLower = user.lname.toLowerCase();
+
         if (
-          fnameLower.includes(searchTerm) ||
-          lnameLower.includes(searchTerm)
+          user._id !== selfId &&
+          (fnameLower.includes(searchTerm) || lnameLower.includes(searchTerm))
         ) {
           matchedUsersSet.add(user);
         }
       });
+
       const matchedUsers = Array.from(matchedUsersSet);
       return matchedUsers;
     },

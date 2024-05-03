@@ -173,6 +173,20 @@ const GET_BLOGS_BY_USER_ID = gql`
   }
 `;
 
+const GET_BLOGS_BY_FOLLOWING = gql`
+  query Query($userId: String!) {
+    getBlogsByFollowing(userId: $userId) {
+      _id
+      content
+      date
+      image
+      likes
+      title
+      userId
+    }
+  }
+`;
+
 const LIKE_BLOG = gql`
   mutation Mutation($blogId: String!, $userId: String!) {
     likeBlog(blogId: $blogId, userId: $userId) {
@@ -344,8 +358,8 @@ const UNFOLLOW_USER = gql`
 `;
 
 const SEARCH_USER_BY_NAME = gql`
-  query Query($searchTerm: String!) {
-    searchUserByName(searchTerm: $searchTerm) {
+  query Query($selfId: String!, $searchTerm: String!) {
+    searchUserByName(selfId: $selfId, searchTerm: $searchTerm) {
       _id
       bio
       email
@@ -369,6 +383,7 @@ let exported = {
   GET_ALL_BLOGS,
   GET_SAVED_BLOGS,
   GET_BLOGS_BY_USER_ID,
+  GET_BLOGS_BY_FOLLOWING,
   EDIT_BLOG,
   LIKE_BLOG,
   UNLIKE_BLOG,

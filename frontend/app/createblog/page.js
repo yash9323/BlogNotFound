@@ -10,22 +10,22 @@ const Page = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [text, setText] = useState("");
-  const [image,setImage] = useState(null);
+  const [image, setImage] = useState(null);
 
   const renderHeader = () => {
     return (
-        <span className="ql-formats">
-            <button className="ql-bold" aria-label="Bold"></button>
-            <button className="ql-italic" aria-label="Italic"></button>
-            <button className="ql-underline" aria-label="Underline"></button>
-        </span>
+      <span className="ql-formats">
+        <button className="ql-bold" aria-label="Bold"></button>
+        <button className="ql-italic" aria-label="Italic"></button>
+        <button className="ql-underline" aria-label="Underline"></button>
+      </span>
     );
-};
+  };
 
-const header = renderHeader();
+  const header = renderHeader();
 
   const handleimagechange = (e) => {
-      setImage(e.target.files[0]);
+    setImage(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
@@ -35,11 +35,11 @@ const header = renderHeader();
     formData.append("file", image);
     formData.append("title", title);
     formData.append("content", text);
-    formData.append("userId",session.user._id);
+    formData.append("userId", session.user._id);
     try {
       const res = await fetch("/api/createblog", {
         method: "POST",
-        body: formData
+        body: formData,
       });
       if (res.ok) {
         toast.success(`Blog Created Successfully Redirecting`, {
@@ -52,7 +52,7 @@ const header = renderHeader();
       }
       toast.error("Error while adding blog");
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -65,24 +65,29 @@ const header = renderHeader();
         </h3>
       </div>
       <div>
-        <form className="mt-5 space-y-6" onSubmit={handleSubmit} >
+        <form className="mt-5 space-y-6" onSubmit={handleSubmit}>
           <div>
-          {image && (
-            <div>
-              <h1>Blog Cover Image Preview: </h1>
-              <Image
-                width={200}
-                height={200}
-                src={URL.createObjectURL(image)}
-                alt=""
-                className="mt-5 w-full h-56 aspect-ratio aspect-square object-cover"
-              />
-            </div>
-          )}
-          <label className="mt-5 block text-sm font-medium leading-6 text-white">
-              Upload  an image for your post:
+            {image && (
+              <div>
+                <h1>Blog Cover Image Preview: </h1>
+                <Image
+                  width={200}
+                  height={200}
+                  src={URL.createObjectURL(image)}
+                  alt=""
+                  className="mt-5 w-full h-56 aspect-ratio aspect-square object-cover"
+                />
+              </div>
+            )}
+            <label className="mt-5 block text-sm font-medium leading-6 text-white">
+              Upload an image for your post:
             </label>
-            <input type="file" accept="image/*" name="img" onChange={handleimagechange} />
+            <input
+              type="file"
+              accept="image/*"
+              name="img"
+              onChange={handleimagechange}
+            />
           </div>
           <div>
             <label className="block text-sm font-medium leading-6 text-white">
@@ -103,9 +108,9 @@ const header = renderHeader();
               onTextChange={(e) => {
                 setText(e.htmlValue);
               }}
-              headerTemplate = {header}
+              headerTemplate={header}
               className="w-full"
-              style={{ height: '50vh' }}
+              style={{ height: "50vh" }}
             />
           </div>
           <div>

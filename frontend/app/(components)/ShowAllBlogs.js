@@ -14,7 +14,7 @@ const ShowAllBlogs = () => {
       );
       setBlogs(res.getAllBlogs);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
   useEffect(() => {

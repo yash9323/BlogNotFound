@@ -9,5 +9,6 @@ export const config = {
     "/saved",
     "/myblogs",
     "/findpeople",
+    "/fromfollowing",
   ],
 };

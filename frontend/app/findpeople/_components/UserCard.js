@@ -18,7 +18,6 @@ const UserCard = ({ data }) => {
       const user = await request(graphqlEndpoint, queries.GET_USER, {
         userId: session.user._id,
       });
-      console.log(user);
       setUserData(user.getUser);
     } catch (error) {
       console.error(error);
