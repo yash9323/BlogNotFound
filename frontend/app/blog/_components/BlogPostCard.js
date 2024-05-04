@@ -27,7 +27,7 @@ const BlogPostCard = ({ blogData, authorData, userData }) => {
     setIsSaved(
       userData && userData._id && userData.saved.includes(blogData._id)
     );
-  }, [userData, blogData]);
+  }, []);
 
   const handleLikeUnlike = async () => {
     if (!userId) {

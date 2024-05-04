@@ -42,6 +42,7 @@ type User {
     getBlogsByFollowing(userId: String!): [Blog]
     getSavedBlogs(userId: String!): [Blog]
     getCommentsByBlogId( blogId: String!): [Comment]
+    searchBlogs(searchTerm: String!): [Blog]
   }
 
   type Mutation {
