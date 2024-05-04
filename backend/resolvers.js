@@ -6,6 +6,9 @@ import {
   blogs as blogCollection,
   comments as commentCollection,
 } from "./config/mongoCollections.js";
+import { Client } from "@elastic/elasticsearch";
+
+const client = new Client({ node: "http://localhost:9200" });
 
 export const resolvers = {
   Query: {
@@ -161,6 +164,33 @@ export const resolvers = {
       });
 
       return commentsWithBlogId;
+    },
+    searchBlogs: async (_, args) => {
+      let { searchTerm } = args;
+
+      try {
+        const result = await client.search({
+          index: "newtest",
+          body: {
+            query: {
+              wildcard: { content: `*${searchTerm}*` },
+            },
+          },
+        });
+
+        const hits = result.hits.hits.map((hit) => hit._id);
+
+        const blogs = await blogCollection();
+
+        const matchedBlogs = await blogs.find({ _id: { $in: hits } }).toArray();
+
+        return matchedBlogs;
+      } catch (error) {
+        console.error(error);
+        throw new GraphQLError(`searchBlogs: Error searching blogs`, {
+          extensions: { statusCode: 500, code: "INTERNAL_SERVER_ERROR" },
+        });
+      }
     },
   },
   Mutation: {
@@ -391,6 +421,16 @@ export const resolvers = {
           extensions: { statusCode: 400, code: "INTERNAL_SERVER_ERROR" },
         });
       }
+
+      client.index({
+        index: "newtest",
+        id: newBlog._id,
+        body: {
+          title: title,
+          content: content,
+        },
+      });
+
       return newBlog;
     },
     editBlog: async (_, args) => {
