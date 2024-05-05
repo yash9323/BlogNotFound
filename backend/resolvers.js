@@ -178,6 +178,7 @@ export const resolvers = {
 
       return commentsWithBlogId;
     },
+    // elastic search
     searchBlogs: async (_, args) => {
       let { searchTerm } = args;
 
@@ -412,6 +413,7 @@ export const resolvers = {
 
       return updateSelfAfter;
     },
+    // elastic search
     createBlog: async (_, args) => {
       let { title, image, content, userId } = args;
       // validate
@@ -435,7 +437,7 @@ export const resolvers = {
         });
       }
 
-      client.index({
+      const elastic = await client.index({
         index: "newtest",
         id: newBlog._id,
         body: {
@@ -446,8 +448,9 @@ export const resolvers = {
 
       return newBlog;
     },
+    // elastic search
     editBlog: async (_, args) => {
-      let { _id, userId, title, content } = args;
+      let { _id, userId, image, title, content } = args;
 
       // validate
 
@@ -472,6 +475,10 @@ export const resolvers = {
         updateFields.content = content;
       }
 
+      if (image !== undefined && image != null) {
+        updateFields.image = image;
+      }
+
       updateFields.date = new Date();
 
       const updateResult = await blogs.updateOne(
@@ -487,8 +494,20 @@ export const resolvers = {
 
       const updatedBlog = await blogs.findOne({ _id: _id });
 
+      const elastic = await client.update({
+        index: "newtest",
+        id: updatedBlog._id,
+        body: {
+          doc: {
+            title: updatedBlog.title,
+            content: updatedBlog.content,
+          },
+        },
+      });
+
       return updatedBlog;
     },
+    // elastic search
     removeBlog: async (_, args) => {
       let { _id } = args;
 
@@ -539,9 +558,13 @@ export const resolvers = {
         });
       }
 
+      const elastic = await client.delete({
+        index: "newtest",
+        id: _id,
+      });
+
       return blog;
     },
-
     saveBlog: async (_, args) => {
       let { blogId, userId } = args;
 

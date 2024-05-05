@@ -88,15 +88,20 @@ const CREATE_BLOG = gql`
 `;
 
 const EDIT_BLOG = gql`
-  mutation Mutation($id: String!, $userId: String!) {
-    editBlog(_id: $id, userId: $userId) {
+  mutation Mutation(
+    $id: String!
+    $userId: String!
+    $title: String
+    $content: String
+  ) {
+    editBlog(_id: $id, userId: $userId, title: $title, content: $content) {
       _id
+      userId
       content
       date
       image
-      likes
       title
-      userId
+      likes
     }
   }
 `;
@@ -107,23 +112,14 @@ const EDIT_USER = gql`
     $fname: String
     $lname: String
     $email: String
-    $password: String
     $bio: String
   ) {
-    editUser(
-      _id: $id
-      fname: $fname
-      lname: $lname
-      email: $email
-      password: $password
-      bio: $bio
-    ) {
+    editUser(_id: $id, fname: $fname, lname: $lname, email: $email, bio: $bio) {
       _id
       bio
       email
       fname
       lname
-      password
       followers
       following
       saved
@@ -223,7 +219,6 @@ const SAVE_BLOG = gql`
       followers
       following
       lname
-      password
       saved
     }
   }
@@ -238,7 +233,6 @@ const UNSAVE_BLOG = gql`
       fname
       followers
       following
-      password
       lname
       saved
     }
@@ -274,7 +268,6 @@ const CREATE_COMMENT = gql`
         followers
         following
         lname
-        password
         saved
       }
     }
@@ -296,7 +289,6 @@ const GET_COMMENTS_BY_BLOG_ID = gql`
         followers
         following
         lname
-        password
         saved
       }
     }
@@ -318,7 +310,6 @@ const DELETE_COMMMENT = gql`
         followers
         following
         lname
-        password
         saved
       }
     }
@@ -335,7 +326,6 @@ const FOLLOW_USER = gql`
       followers
       following
       lname
-      password
       saved
     }
   }
@@ -351,7 +341,6 @@ const UNFOLLOW_USER = gql`
       followers
       following
       lname
-      password
       saved
     }
   }
@@ -367,7 +356,6 @@ const SEARCH_USER_BY_NAME = gql`
       followers
       following
       lname
-      password
       saved
     }
   }

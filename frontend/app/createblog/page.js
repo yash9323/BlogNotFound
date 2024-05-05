@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
-import { Editor } from "primereact/editor";
+import Editor from "./_components/Editor";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 
@@ -12,17 +12,9 @@ const Page = () => {
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
 
-  const renderHeader = () => {
-    return (
-      <span className="ql-formats">
-        <button className="ql-bold" aria-label="Bold"></button>
-        <button className="ql-italic" aria-label="Italic"></button>
-        <button className="ql-underline" aria-label="Underline"></button>
-      </span>
-    );
+  const handleContentChange = (newText) => {
+    setText(newText);
   };
-
-  const header = renderHeader();
 
   const handleimagechange = (e) => {
     setImage(e.target.files[0]);
@@ -104,13 +96,8 @@ const Page = () => {
           </div>
           <div>
             <Editor
-              value={text}
-              onTextChange={(e) => {
-                setText(e.htmlValue);
-              }}
-              headerTemplate={header}
-              className="w-full"
-              style={{ height: "50vh" }}
+              content={text}
+              onChange={(newContent) => handleContentChange(newContent)}
             />
           </div>
           <div>

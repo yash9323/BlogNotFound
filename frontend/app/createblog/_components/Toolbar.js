@@ -1,14 +1,5 @@
 "use client";
-import { Editor } from "@tiptap/react";
-import {
-  Bold,
-  Strikethrough,
-  Italic,
-  List,
-  ListOrdered,
-  Heading2,
-  Underline,
-} from "lucide-react";
+import { Bold, Strikethrough, Italic, Underline } from "lucide-react";
 
 const Toolbar = ({ editor, content }) => {
   if (!editor) {
@@ -16,7 +7,7 @@ const Toolbar = ({ editor, content }) => {
   }
   return (
     <div
-      className="px-4 py-3 rounded-tl-md rounded-tr-md flex justify-between items-start
+      className="px-4 py-3 flex justify-between items-start
     gap-5 w-full flex-wrap border border-gray-700"
     >
       <div className="flex justify-start items-center gap-5 w-full lg:w-10/12 flex-wrap ">
@@ -27,7 +18,7 @@ const Toolbar = ({ editor, content }) => {
           }}
           className={
             editor.isActive("bold")
-              ? "bg-sky-700 text-white p-0.5 rounded-lg"
+              ? "bg-sky-700 text-white p-0.5"
               : "text-sky-400"
           }
         >
@@ -40,7 +31,7 @@ const Toolbar = ({ editor, content }) => {
           }}
           className={
             editor.isActive("italic")
-              ? "bg-sky-700 text-white p-0.5 rounded-lg"
+              ? "bg-sky-700 text-white p-0.5"
               : "text-sky-400"
           }
         >
@@ -53,7 +44,7 @@ const Toolbar = ({ editor, content }) => {
           }}
           className={
             editor.isActive("underline")
-              ? "bg-sky-700 text-white p-0.5 rounded-lg"
+              ? "bg-sky-700 text-white p-0.5"
               : "text-sky-400"
           }
         >
@@ -66,51 +57,11 @@ const Toolbar = ({ editor, content }) => {
           }}
           className={
             editor.isActive("strike")
-              ? "bg-sky-700 text-white p-0.5 rounded-lg"
+              ? "bg-sky-700 text-white p-0.5"
               : "text-sky-400"
           }
         >
           <Strikethrough className="w-5 h-5" />
-        </button>
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().toggleHeading({ level: 2 }).run();
-          }}
-          className={
-            editor.isActive("heading", { level: 2 })
-              ? "bg-sky-700 text-white p-0.5 rounded-lg"
-              : "text-sky-400"
-          }
-        >
-          <Heading2 className="w-5 h-5" />
-        </button>
-
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().toggleBulletList().run();
-          }}
-          className={
-            editor.isActive("bulletList")
-              ? "bg-sky-700 text-white p-0.5 rounded-lg"
-              : "text-sky-400"
-          }
-        >
-          <List className="w-5 h-5" />
-        </button>
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus().toggleOrderedList().run();
-          }}
-          className={
-            editor.isActive("orderedList")
-              ? "bg-sky-700 text-white p-0.5 rounded-lg"
-              : "text-sky-400"
-          }
-        >
-          <ListOrdered className="w-5 h-5" />
         </button>
       </div>
     </div>

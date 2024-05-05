@@ -78,6 +78,7 @@ type User {
     editBlog(
       _id: String!
       userId: String!
+      image: String
       title: String
       content: String): Blog
     

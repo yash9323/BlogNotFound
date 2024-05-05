@@ -7,11 +7,12 @@ Blog Not Found : ( One of a Kind Blog Website )
 validations
 Seed Data
 
+<<<<<<< Updated upstream
 s3 permission
+=======
+>>>>>>> Stashed changes
 CSS for edit blog
 
-NO NOT RETURN PASSWORD IN QUERIES
 Edit Blog -- TODO
 List of followers and Following -- button to follow/unfollow
-
-xattr -d com.apple.quarantine /path/to/your/JDK/file
+tags

@@ -15,6 +15,7 @@ const Page = ({ params }) => {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
+  const [limage, setLimage] = useState(null);
   const [error, setError] = useState("");
   const [showEditor, setShowEditor] = useState(false);
 
@@ -32,12 +33,13 @@ const Page = ({ params }) => {
       }
       setTitle(response.getBlog.title);
       setText(response.getBlog.content);
+      setLimage(response.getBlog.image);
+      setImage(response.getBlog.image);
       setShowEditor(true);
     } catch (error) {
       console.error(error);
     }
   };
-
   useEffect(() => {
     fetchData();
   }, [id]);
@@ -47,6 +49,7 @@ const Page = ({ params }) => {
   };
 
   const handleimagechange = (e) => {
+    console.log(limage);
     setImage(e.target.files[0]);
   };
 
@@ -54,17 +57,23 @@ const Page = ({ params }) => {
     e.preventDefault();
     let title = e.target.title.value;
     const formData = new FormData();
-    formData.append("file", image);
+    if (image !== limage) {
+      formData.append("file", image);
+      formData.append("fg", true);
+    } else {
+      formData.append("fg", false);
+    }
+    formData.append("id", id);
     formData.append("title", title);
     formData.append("content", text);
     formData.append("userId", session.user._id);
     try {
-      const res = await fetch("/api/createblog", {
+      const res = await fetch("/api/editblog", {
         method: "POST",
         body: formData,
       });
       if (res.ok) {
-        toast.success(`Blog Created Successfully`, {
+        toast.success(`Blog Updated Successfully`, {
           duration: 2000,
         });
         setTimeout(() => {
@@ -72,7 +81,7 @@ const Page = ({ params }) => {
         }, 1500);
         return;
       }
-      toast.error("Error while adding blog");
+      toast.error("Error while updating blog");
     } catch (error) {
       console.error(error);
     }
@@ -83,7 +92,7 @@ const Page = ({ params }) => {
       <Toaster position="bottom-center" />
       <div>
         <h3 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">
-          Create a New Blog
+          Edit Blog
         </h3>
       </div>
       <div>
@@ -95,7 +104,7 @@ const Page = ({ params }) => {
                 <Image
                   width={200}
                   height={200}
-                  src={URL.createObjectURL(image)}
+                  src={image === limage ? limage : URL.createObjectURL(image)}
                   alt=""
                   className="mt-5 w-full h-56 aspect-ratio aspect-square object-cover"
                 />

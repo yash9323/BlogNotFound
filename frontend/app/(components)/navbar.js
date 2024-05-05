@@ -2,10 +2,14 @@
 import React from "react";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { calculateOverrideValues } from "next/dist/server/font-utils";
+import { CloudCog } from "lucide-react";
 
 const Navbar = () => {
   const { data: session, status } = useSession();
+  const router = useRouter();
   if (status === "authenticated") {
     return (
       <div className="mt-5 ml-5 mr-5 flex justify-between items-center">
@@ -46,7 +50,14 @@ const Navbar = () => {
             </h1>
           </Link>
           <button
-            onClick={() => signOut()}
+            onClick={async () => {
+              let data = await signOut({
+                redirect: false,
+                callbackUrl: "/landing",
+              });
+              console.log(data);
+              router.push(data.url);
+            }}
             className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ml-2"
           >
             Sign out
