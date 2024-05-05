@@ -8,9 +8,7 @@ validations
 Seed Data
 
 s3 permission
-password encryption
-signout callback
-CSS for edit blog,find people
+CSS for edit blog
 
 NO NOT RETURN PASSWORD IN QUERIES
 Edit Blog -- TODO

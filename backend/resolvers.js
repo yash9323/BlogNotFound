@@ -7,6 +7,7 @@ import {
   comments as commentCollection,
 } from "./config/mongoCollections.js";
 import { Client } from "@elastic/elasticsearch";
+import bcrypt from "bcrypt";
 
 const client = new Client({ node: "http://localhost:9200" });
 
@@ -18,7 +19,7 @@ export const resolvers = {
       //validate
 
       const users = await userCollection();
-      const user = await users.findOne({ email: email, password: password });
+      const user = await users.findOne({ email: email});
       if (!user) {
         throw new GraphQLError(
           "Could not find the user with provided email/password",
@@ -28,8 +29,20 @@ export const resolvers = {
         );
       }
 
-      return user;
+      const match = await bcrypt.compare(password, user.password);
+      if(match) {
+        return user;
+      }
+      else{
+        throw new GraphQLError(
+          "Could not find the user with provided email/password",
+          {
+            extensions: { code: "NOT_FOUND", statusCode: 404 },
+          }
+        );
+      }
     },
+    
     getUser: async (_, args) => {
       let { userId } = args;
 

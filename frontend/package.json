@@ -15,6 +15,7 @@
     "@tiptap/pm": "^2.3.1",
     "@tiptap/react": "^2.3.1",
     "@tiptap/starter-kit": "^2.3.1",
+    "bcrypt": "^5.1.1",
     "Buffer": "^0.0.0",
     "graphql-request": "^6.1.0",
     "install": "^0.13.0",

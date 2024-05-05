@@ -49,12 +49,13 @@ const UserCard = ({ data }) => {
   };
 
   return (
-    <div>
+    <div className="border border-white p-5 mt-5 ml-5 mr-5 flex flex-col bg-gray-800 rounded-xl shadow-md">
       Name: {data.fname} {data.lname}
       <br />
       Bio: {data.bio}
       <br />
       email: {data.email}
+      <br />
       Followers: {followersCount}
       <button onClick={handleFollowUnfollow}>
         {isFollowed ? "Unfollow" : "Follow"}
