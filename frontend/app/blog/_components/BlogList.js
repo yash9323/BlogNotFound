@@ -8,7 +8,7 @@ const BlogList = ({ data }) => {
         .slice()
         .reverse()
         .map((blog, index) => (
-          <BlogCard key={index} data={blog} index={index}/>
+          <BlogCard key={index} data={blog} />
         ))}
     </div>
   );

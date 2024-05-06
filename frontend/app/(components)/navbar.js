@@ -44,6 +44,9 @@ const Navbar = () => {
           >
             Find&nbsp;People
           </Link>
+          <div className="flex text-center text-2xl font-bold leading-9 tracking-tight text-white">
+            <Link href="/search">Search</Link>
+          </div>
           <Link href="/profile">
             <h1 className="text-center text-2xl font-bold leading-9 tracking-tight text-white">
               Profile
@@ -55,7 +58,6 @@ const Navbar = () => {
                 redirect: false,
                 callbackUrl: "/landing",
               });
-              console.log(data);
               router.push(data.url);
             }}
             className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ml-2"

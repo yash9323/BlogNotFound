@@ -29,8 +29,10 @@ export async function POST(req) {
   try {
     const formData = await req.formData();
     let fg = formData.get("fg");
-    console.log("************* fg", fg);
     let id = formData.get("id");
+    console.log("id", id);
+    let tag = formData.get("tag");
+    console.log("tag", tag);
     let title = formData.get("title");
     let content = formData.get("content");
     let userId = formData.get("userId");
@@ -42,11 +44,13 @@ export async function POST(req) {
         id: id,
         userId: userId,
         title: title,
+        tag: tag,
         content: content,
       });
       return NextResponse.json({ message: "success" }, { status: 200 });
     } else {
       let image = formData.get("file");
+
       // uploading image
 
       const buffer = Buffer.from(await image.arrayBuffer());
@@ -57,6 +61,7 @@ export async function POST(req) {
         id: id,
         title: title,
         content: content,
+        tag: tag,
         userId: userId,
         image: `https://blognotf.s3.amazonaws.com/images/${fileName}`,
       });

@@ -6,6 +6,7 @@ export const config = {
     "/profile/:path*",
     "/createblog",
     "/blog/:path*",
+    "/blog/[id]",
     "/saved",
     "/myblogs",
     "/findpeople",

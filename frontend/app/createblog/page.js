@@ -23,8 +23,13 @@ const Page = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let title = e.target.title.value;
+    let tag = e.target.tag.value;
+    if (!tag) {
+      tag = "";
+    }
     const formData = new FormData();
     formData.append("file", image);
+    formData.append("tag", tag);
     formData.append("title", title);
     formData.append("content", text);
     formData.append("userId", session.user._id);
@@ -34,7 +39,7 @@ const Page = () => {
         body: formData,
       });
       if (res.ok) {
-        toast.success(`Blog Created Successfully Redirecting`, {
+        toast.success(`Blog Created Successfully, redirecting`, {
           duration: 2000,
         });
         setTimeout(() => {
@@ -80,6 +85,19 @@ const Page = () => {
               name="img"
               onChange={handleimagechange}
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium leading-6 text-white">
+              Tag
+            </label>
+            <div className="mt-2">
+              <input
+                type="text"
+                name="tag"
+                placeholder="Enter tag for your blog"
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium leading-6 text-white">

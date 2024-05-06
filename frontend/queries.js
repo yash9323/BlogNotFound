@@ -49,16 +49,33 @@ const GET_USER = gql`
     }
   }
 `;
+
+const REMOVE_USER = gql`
+  mutation Mutation($id: String!) {
+    removeUser(_id: $id) {
+      _id
+      bio
+      email
+      fname
+      followers
+      following
+      lname
+      saved
+    }
+  }
+`;
+
 const GET_BLOG = gql`
-  query GetBlog($blogId: String!) {
+  query Query($blogId: String!) {
     getBlog(blogId: $blogId) {
       _id
       content
       date
+      image
       likes
+      tag
       title
       userId
-      image
     }
   }
 `;
@@ -66,23 +83,26 @@ const GET_BLOG = gql`
 const CREATE_BLOG = gql`
   mutation Mutation(
     $title: String!
+    $image: String!
     $content: String!
     $userId: String!
-    $image: String!
+    $tag: String
   ) {
     createBlog(
       title: $title
+      image: $image
       content: $content
       userId: $userId
-      image: $image
+      tag: $tag
     ) {
       _id
       content
       date
+      image
       likes
+      tag
       title
       userId
-      image
     }
   }
 `;
@@ -91,17 +111,27 @@ const EDIT_BLOG = gql`
   mutation Mutation(
     $id: String!
     $userId: String!
+    $image: String
     $title: String
     $content: String
+    $tag: String
   ) {
-    editBlog(_id: $id, userId: $userId, title: $title, content: $content) {
+    editBlog(
+      _id: $id
+      userId: $userId
+      image: $image
+      title: $title
+      content: $content
+      tag: $tag
+    ) {
       _id
-      userId
       content
       date
       image
-      title
       likes
+      tag
+      title
+      userId
     }
   }
 `;
@@ -137,6 +167,20 @@ const GET_ALL_BLOGS = gql`
       date
       content
       _id
+    }
+  }
+`;
+
+const SEARCH_BLOGS = gql`
+  query SearchBlogs($searchTerm: String!) {
+    searchBlogs(searchTerm: $searchTerm) {
+      _id
+      content
+      date
+      image
+      likes
+      title
+      userId
     }
   }
 `;
@@ -361,9 +405,31 @@ const SEARCH_USER_BY_NAME = gql`
   }
 `;
 
+const GET_BLOGS_BY_TAG = gql`
+  query Query($tag: String!) {
+    getBlogsByTag(tag: $tag) {
+      _id
+      content
+      date
+      image
+      likes
+      tag
+      title
+      userId
+    }
+  }
+`;
+
+const GET_TAGS = gql`
+  query Query {
+    getTags
+  }
+`;
+
 let exported = {
   LOGIN_USER,
   REGISTER_USER,
+  REMOVE_USER,
   FOLLOW_USER,
   UNFOLLOW_USER,
   GET_USER,
@@ -384,6 +450,9 @@ let exported = {
   GET_COMMENTS_BY_BLOG_ID,
   DELETE_COMMMENT,
   SEARCH_USER_BY_NAME,
+  SEARCH_BLOGS,
+  GET_BLOGS_BY_TAG,
+  GET_TAGS,
 };
 
 export default exported;

@@ -2,48 +2,40 @@
 import { useState, useEffect } from "react";
 import request from "graphql-request";
 import queries from "../../queries";
-import UserCard from "./_components/UserCard";
-import { useSession } from "next-auth/react";
+import BlogList from "../blog/_components/BlogList";
 
-const FindPeople = () => {
-  const { data: session } = useSession();
+const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [result, setResult] = useState([]);
   const [error, setError] = useState("");
-
   const fetchData = async () => {
     try {
-      if (session) {
-        const response = await request(
-          "http://localhost:4000/",
-          queries.SEARCH_USER_BY_NAME,
-          { selfId: session.user._id, searchTerm: searchTerm }
-        );
-        setResult(response.searchUserByName);
-        setError(null);
-      }
+      const response = await request(
+        "http://localhost:4000/",
+        queries.SEARCH_BLOGS,
+        { searchTerm: searchTerm }
+      );
+      setResult(response.searchBlogs);
     } catch (error) {
-      setError("An error occurred while fetching data.");
+      setError("An error occurred while fetching data");
       console.error(error);
     }
   };
-
   useEffect(() => {
     fetchData();
-  }, [searchTerm, session]);
+  }, [searchTerm]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const searchInput = event.target.searchbar.value;
     setSearchTerm(searchInput);
   };
-
   return (
     <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
       <form onSubmit={handleSubmit} className="mt-5 space-y-6">
         <div>
           <label className="block text-sm font-medium leading-6 text-white">
-            Find Your Favorite Author Here
+            Find Your Favorite Blogs
           </label>
           <div className="mt-2">
             <input
@@ -68,11 +60,11 @@ const FindPeople = () => {
         ) : result.length === 0 ? (
           <h1>No results found</h1>
         ) : (
-          result.map((user) => <UserCard key={user._id} data={user} />)
+          <BlogList data={result} />
         )}
       </div>
     </div>
   );
 };
 
-export default FindPeople;
+export default Search;

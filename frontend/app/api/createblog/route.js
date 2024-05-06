@@ -28,6 +28,8 @@ async function s3upload(file, fileName) {
 export async function POST(req) {
   try {
     const formData = await req.formData();
+
+    let tag = formData.get("tag");
     let image = formData.get("file");
     let title = formData.get("title");
     let content = formData.get("content");
@@ -44,6 +46,7 @@ export async function POST(req) {
       title: title,
       content: content,
       userId: userId,
+      tag: tag,
       image: `https://blognotf.s3.amazonaws.com/images/${fileName}`,
     });
     return NextResponse.json({ message: "success" }, { status: 200 });

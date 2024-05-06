@@ -1,5 +1,4 @@
 import React from "react";
-import ShowAllBlogs from "@/app/(components)/ShowAllBlogs";
 import Link from "next/link";
 
 const LandingPage = () => {
@@ -20,7 +19,6 @@ const LandingPage = () => {
           </button>
         </Link>
       </div>
-      <ShowAllBlogs />
     </div>
   );
 };

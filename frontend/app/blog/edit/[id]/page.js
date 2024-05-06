@@ -13,6 +13,7 @@ const Page = ({ params }) => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [title, setTitle] = useState("");
+  const [tag, setTag] = useState("");
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
   const [limage, setLimage] = useState(null);
@@ -20,42 +21,45 @@ const Page = ({ params }) => {
   const [showEditor, setShowEditor] = useState(false);
 
   const fetchData = async () => {
-    try {
-      const response = await request(
-        "http://localhost:4000",
-        queries.GET_BLOG,
-        {
-          blogId: id,
+    if (session) {
+      try {
+        const response = await request(
+          "http://localhost:4000",
+          queries.GET_BLOG,
+          {
+            blogId: id,
+          }
+        );
+        if (!response) {
+          setError("Blog details not found");
         }
-      );
-      if (!response) {
-        setError("Blog details not found");
+        setTitle(response.getBlog.title);
+        setText(response.getBlog.content);
+        setLimage(response.getBlog.image);
+        setImage(response.getBlog.image);
+        setTag(response.getBlog.tag);
+        setShowEditor(true);
+      } catch (error) {
+        console.error(error);
       }
-      setTitle(response.getBlog.title);
-      setText(response.getBlog.content);
-      setLimage(response.getBlog.image);
-      setImage(response.getBlog.image);
-      setShowEditor(true);
-    } catch (error) {
-      console.error(error);
     }
   };
   useEffect(() => {
     fetchData();
-  }, [id]);
+  }, [id, session]);
 
   const handleContentChange = (newText) => {
     setText(newText);
   };
 
   const handleimagechange = (e) => {
-    console.log(limage);
     setImage(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     let title = e.target.title.value;
+    let tag = e.target.tag.value;
     const formData = new FormData();
     if (image !== limage) {
       formData.append("file", image);
@@ -63,7 +67,9 @@ const Page = ({ params }) => {
     } else {
       formData.append("fg", false);
     }
+
     formData.append("id", id);
+    formData.append("tag", tag);
     formData.append("title", title);
     formData.append("content", text);
     formData.append("userId", session.user._id);
@@ -119,6 +125,19 @@ const Page = ({ params }) => {
               name="img"
               onChange={handleimagechange}
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium leading-6 text-white">
+              Tag
+            </label>
+            <div className="mt-2">
+              <input
+                type="text"
+                name="tag"
+                defaultValue={tag}
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium leading-6 text-white">

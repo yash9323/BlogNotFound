@@ -4,15 +4,17 @@ Blog Not Found : ( One of a Kind Blog Website )
 
 ## Basic Validation functions
 
-validations
+validations{
+trim ids
+image validate
+}
 Seed Data
 
-<<<<<<< Updated upstream
-s3 permission
-=======
->>>>>>> Stashed changes
-CSS for edit blog
+change elastic search index name
 
-Edit Blog -- TODO
+search CSS
+
+CSS for edit blog text editor
+
 List of followers and Following -- button to follow/unfollow
 tags

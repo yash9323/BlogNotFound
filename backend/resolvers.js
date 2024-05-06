@@ -19,7 +19,7 @@ export const resolvers = {
       //validate
 
       const users = await userCollection();
-      const user = await users.findOne({ email: email});
+      const user = await users.findOne({ email: email });
       if (!user) {
         throw new GraphQLError(
           "Could not find the user with provided email/password",
@@ -30,10 +30,9 @@ export const resolvers = {
       }
 
       const match = await bcrypt.compare(password, user.password);
-      if(match) {
+      if (match) {
         return user;
-      }
-      else{
+      } else {
         throw new GraphQLError(
           "Could not find the user with provided email/password",
           {
@@ -42,7 +41,6 @@ export const resolvers = {
         );
       }
     },
-    
     getUser: async (_, args) => {
       let { userId } = args;
 
@@ -178,19 +176,60 @@ export const resolvers = {
 
       return commentsWithBlogId;
     },
+    getBlogsByTag: async (_, args) => {
+      let { tag } = args;
+
+      if (!tag) {
+        return [];
+      }
+
+      const blogs = await blogCollection();
+
+      const matchedBlogs = await blogs.find({ tag: tag }).toArray();
+
+      return matchedBlogs;
+    },
+    getTags: async (_, args) => {
+      const blogs = await blogCollection();
+      try {
+        const uniqueTags = await blogs.distinct("tag");
+        const filteredTags = uniqueTags.filter((tag) => tag.trim() !== "");
+        return filteredTags;
+      } catch (error) {
+        console.error(error);
+        throw new Error("Error fetching unique tags");
+      }
+    },
     // elastic search
     searchBlogs: async (_, args) => {
       let { searchTerm } = args;
+
+      searchTerm = searchTerm.toLowerCase();
 
       try {
         const result = await client.search({
           index: "newtest",
           body: {
             query: {
-              wildcard: { content: `*${searchTerm}*` },
+              bool: {
+                should: [
+                  { wildcard: { content: `*${searchTerm}*` } },
+                  { wildcard: { title: `*${searchTerm}*` } },
+                ],
+              },
             },
           },
         });
+
+        // const result = await client.search({
+        //   index: "newtest",
+        //   body: {
+        //     query: {
+        //       wildcard: { content: `*${searchTerm}*` },
+        //       wildcard: { title: `*${searchTerm}*`}
+        //     },
+        //   },
+        // });
 
         const hits = result.hits.hits.map((hit) => hit._id);
 
@@ -212,6 +251,7 @@ export const resolvers = {
       let { fname, lname, email, password, bio } = args;
 
       //validate
+
       const users = await userCollection();
       const user = await users.findOne({ email: email });
       if (user) {
@@ -288,6 +328,47 @@ export const resolvers = {
       const updatedUser = await users.findOne({ _id: _id });
 
       return updatedUser;
+    },
+    removeUser: async (_, args) => {
+      const { _id } = args;
+
+      const users = await userCollection();
+      const user = await users.findOne({ _id });
+
+      if (!user) {
+        throw new GraphQLError(
+          "removeUser: User with provided ID does not exist",
+          { extensions: { code: "BAD_USER_INPUT" } }
+        );
+      }
+
+      const blogs = await blogCollection();
+      const allBlogs = await blogs.find().toArray();
+      const blogIDsToDelete = allBlogs
+        .filter((blog) => blog.userId === _id)
+        .map((blog) => blog._id);
+
+      const removeFromOtherUsersSaved = await users.updateMany(
+        { saved: { $in: blogIDsToDelete } },
+        { $pull: { saved: { $in: blogIDsToDelete } } }
+      );
+
+      const removeFromFollowing = await users.updateMany(
+        { following: _id },
+        { $pull: { following: _id } }
+      );
+
+      const removeFromFollowers = await users.updateMany(
+        { followers: _id },
+        { $pull: { followers: _id } }
+      );
+
+      const deleteBlogs = await blogs.deleteMany({
+        _id: { $in: blogIDsToDelete },
+      });
+      const deletedUser = await users.deleteOne({ _id });
+
+      return user;
     },
     followUser: async (_, args) => {
       let { selfId, userToFollowId } = args;
@@ -415,8 +496,12 @@ export const resolvers = {
     },
     // elastic search
     createBlog: async (_, args) => {
-      let { title, image, content, userId } = args;
+      let { title, image, content, userId, tag } = args;
       // validate
+      if (tag == undefined && tag == null) {
+        tag = "";
+      }
+      tag = tag.toLowerCase().trim();
 
       const blogs = await blogCollection();
 
@@ -428,6 +513,7 @@ export const resolvers = {
         date: new Date(),
         likes: [],
         userId,
+        tag,
       };
 
       let insertedBlog = await blogs.insertOne(newBlog);
@@ -450,7 +536,7 @@ export const resolvers = {
     },
     // elastic search
     editBlog: async (_, args) => {
-      let { _id, userId, image, title, content } = args;
+      let { _id, userId, image, title, content, tag } = args;
 
       // validate
 
@@ -467,6 +553,9 @@ export const resolvers = {
       }
 
       let updateFields = {};
+      if (title !== undefined && title !== null) {
+        updateFields.tag = tag;
+      }
 
       if (title !== undefined && title !== null) {
         updateFields.title = title;
