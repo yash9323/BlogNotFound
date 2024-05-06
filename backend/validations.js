@@ -7,7 +7,7 @@ const errorType = {
   const checkPassword = (password) => {
     const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
     if (!passwordRegex.test(password)) {
-      throw errorObject(errorType.BAD_INPUT, "Error: password must contain at least one digit, one lowercase letter, one uppercase letter, and have a minimum length of 8 characters");
+      throw new GraphQLError("Password must contain at least one digit, one lowercase letter, one uppercase letter, and have a minimum length of 8 characters", null, null, null, null, null, { code: "BAD_INPUT" });
     }
     return password.trim();
   };
@@ -15,13 +15,14 @@ const errorType = {
   const checkEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
     if (!emailRegex.test(email.trim())) {
-      throw errorObject(errorType.BAD_INPUT, "Error: Enter a valid email ID");
+      throw new GraphQLError("Enter a valid email ID", null, null, null, null, null, { code: "BAD_INPUT" });
     }
     if (email.length > 30 || email.length < 0) {
-      throw errorObject(errorType.BAD_INPUT, "Error: Email can be max of 30 characters");
+      throw new GraphQLError("Email can be max of 30 characters", null, null, null, null, null, { code: "BAD_INPUT" });
     }
     return email.trim().toLowerCase();
   };
+  
   const validateBio = (bio) => {
     const minBioLength = 3;
     const maxBioLength = 150;
