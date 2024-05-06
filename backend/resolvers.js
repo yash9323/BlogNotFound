@@ -7,30 +7,47 @@ import {
   comments as commentCollection,
 } from "./config/mongoCollections.js";
 
+import { checkPassword, checkEmail, validateBio, validateName,validateContent,errorType, validateComment } from './validations.js';
+import { ObjectId } from 'mongodb';
+
 export const resolvers = {
   Query: {
     loginUser: async (_, args) => {
       let { email, password } = args;
-
-      //validate
-
-      const users = await userCollection();
-      const user = await users.findOne({ email: email, password: password });
-      if (!user) {
-        throw new GraphQLError(
-          "Could not find the user with provided email/password",
-          {
-            extensions: { code: "NOT_FOUND", statusCode: 404 },
-          }
-        );
+  
+      try {
+        email = checkEmail(email);
+        password = checkPassword(password);
+  
+        const users = await userCollection();
+        const user = await users.findOne({ email, password });
+        if (!user) {
+          throw new GraphQLError(
+            "Could not find the user with the provided email/password",
+            { extensions: { code: "NOT_FOUND", statusCode: 404 } }
+          );
+        }
+  
+        return user;
+      } catch (error) {
+        if (error.type === errorType.BAD_INPUT) {
+          throw new GraphQLError(error.message, {
+            extensions: { code: "BAD_USER_INPUT", statusCode: 400 },
+          });
+        }
+        throw new GraphQLError("Internal server error", {
+          extensions: { code: "INTERNAL_SERVER_ERROR", statusCode: 500 },
+        });
       }
-
-      return user;
     },
     getUser: async (_, args) => {
       let { userId } = args;
 
-      // validate
+      if (!validate(userId)) {
+        throw new GraphQLError('Invalid ID Format', {
+         extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+  });
+}
 
       const users = await userCollection();
       const user = await users.findOne({ _id: userId });
@@ -43,12 +60,13 @@ export const resolvers = {
       return user;
     },
     searchUserByName: async (_, args) => {
-      // validate
 
       let { searchTerm } = args;
 
-      if (!searchTerm) {
-        return [];
+      if (!searchTerm.trim()) {
+        throw new GraphQLError('SearchTerm cannot be empty', {
+          extensions: { code: 'INVALID', statusCode: 400 }
+        });
       }
 
       searchTerm = searchTerm.toLowerCase();
@@ -79,7 +97,11 @@ export const resolvers = {
     getBlog: async (_, args) => {
       let { blogId } = args;
 
-      //validate
+      if (!validate(blogId)) {
+        throw new GraphQLError('Invalid ID Format', {
+         extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+  });
+}
 
       const blogs = await blogCollection();
 
@@ -95,7 +117,11 @@ export const resolvers = {
     getBlogsByUserId: async (_, args) => {
       let { userId } = args;
 
-      //validate
+      if (!validate(userId)) {
+        throw new GraphQLError('Invalid ID Format', {
+         extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+  });
+}
 
       const blogs = await blogCollection();
       const allBlogs = await blogs.find().toArray();
@@ -109,7 +135,11 @@ export const resolvers = {
     getBlogsByFollowing: async (_, args) => {
       let { userId } = args;
 
-      // validate
+      if (!validate(userId)) {
+        throw new GraphQLError('Invalid ID Format', {
+         extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+  });
+}
 
       const users = await userCollection();
       const user = await users.findOne({ _id: userId });
@@ -132,7 +162,11 @@ export const resolvers = {
     getSavedBlogs: async (_, args) => {
       let { userId } = args;
 
-      // validate
+      if (!validate(userId)) {
+        throw new GraphQLError('Invalid ID Format', {
+         extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+  });
+}
 
       const users = await userCollection();
       const user = await users.findOne({ _id: userId });
@@ -152,7 +186,11 @@ export const resolvers = {
     getCommentsByBlogId: async (_, args) => {
       let { blogId } = args;
 
-      //validate
+      if (!validate(blogId)) {
+        throw new GraphQLError('Invalid ID Format', {
+         extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+  });
+}
 
       const comments = await commentCollection();
       const allComments = await comments.find().toArray();
@@ -168,7 +206,13 @@ export const resolvers = {
     registerUser: async (_, args) => {
       let { fname, lname, email, password, bio } = args;
 
-      //validate
+      email = checkEmail(email);
+      password = checkPassword(password);
+
+      validateName(fname, lname);
+
+      validateBio(bio);
+
       const users = await userCollection();
       const user = await users.findOne({ email: email });
       if (user) {
@@ -198,7 +242,12 @@ export const resolvers = {
     editUser: async (_, args) => {
       let { _id, fname, lname, email, password, bio } = args;
 
-      // validate
+      email = checkEmail(email);
+      password = checkPassword(password);
+
+      validateName(fname, lname);
+
+      validateBio(bio);
 
       let updateFields = {};
 
@@ -248,6 +297,18 @@ export const resolvers = {
     },
     followUser: async (_, args) => {
       let { selfId, userToFollowId } = args;
+
+      if (!validate(selfId)) {
+        throw new GraphQLError('Invalid ID Format', {
+         extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+  });
+}
+
+      if (!validate(userToFollowId)) {
+        throw new GraphQLError('Invalid ID Format', {
+        extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+      });
+      }
 
       const users = await userCollection();
 
@@ -310,6 +371,18 @@ export const resolvers = {
     },
     unfollowUser: async (_, args) => {
       let { selfId, userToUnfollowId } = args;
+
+      if (!validate(selfId)) {
+        throw new GraphQLError('Invalid ID Format', {
+         extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+  });
+}
+
+        if (!validate(userToUnfollowId)) {
+          throw new GraphQLError('Invalid ID Format', {
+          extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+        });
+        }
 
       const users = await userCollection();
 
@@ -374,6 +447,15 @@ export const resolvers = {
       let { title, image, content, userId } = args;
       // validate
 
+      validateTitle(title);
+      validateContent(content);
+
+    if (!validate(userId)) {
+      throw new GraphQLError('Invalid ID Format', {
+       extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+});
+}
+
       const blogs = await blogCollection();
 
       const newBlog = {
@@ -398,6 +480,14 @@ export const resolvers = {
       let { _id, userId, title, content } = args;
 
       // validate
+      if (!validate(userId)) {
+        throw new GraphQLError('Invalid ID Format', {
+         extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+  });
+  }
+
+      validateTitle(title);
+      validateContent(content);
 
       const blogs = await blogCollection();
       const blog = await blogs.findOne({ _id: _id });
@@ -464,7 +554,17 @@ export const resolvers = {
     saveBlog: async (_, args) => {
       let { blogId, userId } = args;
 
-      // validate
+      if (!validate(blogId)) {
+        throw new GraphQLError('Invalid ID Format', {
+         extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+  });
+}
+
+      if (!validate(userId)) {
+        throw new GraphQLError('Invalid ID Format', {
+        extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+      });
+      }
 
       const users = await userCollection();
       const user = await users.findOne({ _id: userId });
@@ -505,7 +605,17 @@ export const resolvers = {
     unsaveBlog: async (_, args) => {
       let { blogId, userId } = args;
 
-      // validate
+      if (!validate(blogId)) {
+        throw new GraphQLError('Invalid ID Format', {
+         extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+  });
+}
+
+      if (!validate(userId)) {
+        throw new GraphQLError('Invalid ID Format', {
+        extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+      });
+      }
 
       const users = await userCollection();
       const user = await users.findOne({ _id: userId });
@@ -546,7 +656,17 @@ export const resolvers = {
     likeBlog: async (_, args) => {
       let { blogId, userId } = args;
 
-      //validate
+      if (!validate(blogId)) {
+        throw new GraphQLError('Invalid ID Format', {
+         extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+  });
+}
+
+      if (!validate(userId)) {
+        throw new GraphQLError('Invalid ID Format', {
+        extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+      });
+      }
 
       const users = await userCollection();
       const user = await users.findOne({ _id: userId });
@@ -587,7 +707,17 @@ export const resolvers = {
     unlikeBlog: async (_, args) => {
       let { blogId, userId } = args;
 
-      //validate
+      if (!validate(blogId)) {
+        throw new GraphQLError('Invalid ID Format', {
+         extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+  });
+}
+
+      if (!validate(userId)) {
+        throw new GraphQLError('Invalid ID Format', {
+        extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+      });
+      }
 
       const users = await userCollection();
       const user = await users.findOne({ _id: userId });
@@ -628,7 +758,19 @@ export const resolvers = {
     createComment: async (_, args) => {
       let { blogId, userId, comment } = args;
 
-      //validate
+      
+      if (!validate(blogId)) {
+        throw new GraphQLError('Invalid ID Format', {
+         extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+  });
+}
+
+      if (!validate(userId)) {
+        throw new GraphQLError('Invalid ID Format', {
+        extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+      });
+      }
+      validateComment(comment);
 
       const comments = await commentCollection();
       const users = await userCollection();
@@ -652,6 +794,12 @@ export const resolvers = {
     },
     removeComment: async (_, args) => {
       let { commentId } = args;
+
+      if (!validate(commentId)) {
+        throw new GraphQLError('Invalid ID Format', {
+         extensions: { code: 'BAD_REQUEST',statusCode: 400 }
+  });
+}
 
       const comments = await commentCollection();
 
