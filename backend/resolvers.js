@@ -14,31 +14,21 @@ export const resolvers = {
   Query: {
     loginUser: async (_, args) => {
       let { email, password } = args;
-  
-      try {
-        email = checkEmail(email);
-        password = checkPassword(password);
-  
-        const users = await userCollection();
-        const user = await users.findOne({ email, password });
-        if (!user) {
-          throw new GraphQLError(
-            "Could not find the user with the provided email/password",
-            { extensions: { code: "NOT_FOUND", statusCode: 404 } }
-          );
-        }
-  
-        return user;
-      } catch (error) {
-        if (error.type === errorType.BAD_INPUT) {
-          throw new GraphQLError(error.message, {
-            extensions: { code: "BAD_USER_INPUT", statusCode: 400 },
-          });
-        }
-        throw new GraphQLError("Internal server error", {
-          extensions: { code: "INTERNAL_SERVER_ERROR", statusCode: 500 },
-        });
+
+      //validate
+
+      const users = await userCollection();
+      const user = await users.findOne({ email: email, password: password });
+      if (!user) {
+        throw new GraphQLError(
+          "Could not find the user with provided email/password",
+          {
+            extensions: { code: "NOT_FOUND", statusCode: 404 },
+          }
+        );
       }
+
+      return user;
     },
     getUser: async (_, args) => {
       let { userId } = args;
@@ -206,11 +196,9 @@ export const resolvers = {
     registerUser: async (_, args) => {
       let { fname, lname, email, password, bio } = args;
 
+      validateName(fname, lname);
       email = checkEmail(email);
       password = checkPassword(password);
-
-      validateName(fname, lname);
-
       validateBio(bio);
 
       const users = await userCollection();
@@ -241,6 +229,8 @@ export const resolvers = {
     },
     editUser: async (_, args) => {
       let { _id, fname, lname, email, password, bio } = args;
+
+      _id = _id.trim();
 
       email = checkEmail(email);
       password = checkPassword(password);
