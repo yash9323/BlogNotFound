@@ -294,6 +294,7 @@ export const resolvers = {
 
         const hits = result.hits.hits.map((hit) => hit._id);
 
+        console.log(hits);
         const blogs = await blogCollection();
 
         const matchedBlogs = await blogs.find({ _id: { $in: hits } }).toArray();
@@ -402,7 +403,7 @@ export const resolvers = {
       return updatedUser;
     },
     removeUser: async (_, args) => {
-      const { _id } = args;
+      let { _id } = args;
 
       _id = _id.trim();
       if (!validate(_id)) {
@@ -446,6 +447,26 @@ export const resolvers = {
         _id: { $in: blogIDsToDelete },
       });
       const deletedUser = await users.deleteOne({ _id });
+
+      const queryBody = {
+        query: {
+          ids: {
+            values: blogIDsToDelete,
+          },
+        },
+      };
+
+      try {
+        await client.deleteByQuery({
+          index: "newtest",
+          body: queryBody,
+        });
+      } catch (error) {
+        console.error("Deletion failed:", error);
+        throw new GraphQLError(`removeUser: Error deleting blogs`, {
+          extensions: { statusCode: 500, code: "INTERNAL_SERVER_ERROR" },
+        });
+      }
 
       return user;
     },
@@ -1061,7 +1082,7 @@ export const resolvers = {
         );
       }
 
-      if (comment.userId !== userId) {
+      if (comment.user._id !== userId) {
         throw new GraphQLError(
           "removeBlog: You do not have the permission to remove this comment",
           {

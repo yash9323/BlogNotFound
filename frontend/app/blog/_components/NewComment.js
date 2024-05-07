@@ -7,6 +7,29 @@ import { useRouter } from "next/navigation";
 const NewComment = ({ blogData, authorData, userData }) => {
   const [comment, setComment] = useState("");
   const [allComments, setAllComments] = useState([]);
+  const [error, setError] = useState("");
+
+  function formatBlogDate(dateString) {
+    const date = new Date(dateString);
+    const options = {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    };
+    const day = new Intl.DateTimeFormat("en-US", { day: "numeric" }).format(
+      date
+    );
+    const month = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
+      date
+    );
+    const year = new Intl.DateTimeFormat("en-US", { year: "numeric" }).format(
+      date
+    );
+
+    const displayDate = `${month} ${day}, ${year}`;
+
+    return displayDate;
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,7 +52,28 @@ const NewComment = ({ blogData, authorData, userData }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const newComment = comment.trim();
+    const minCommentLength = 1;
+    const maxCommentLength = 50;
+    const CommentRegex = /[a-zA-Z]/;
 
+    try {
+      if (!newComment) {
+        throw "Comment has only spaces or not been passed";
+      }
+      if (newComment.length < minCommentLength) {
+        throw `Comment must be at least ${minCommentLength} characters long`;
+      }
+      if (newComment.length > maxCommentLength) {
+        throw `Comment exceeds maximum length of ${maxCommentLength} characters`;
+      }
+      if (!newComment.match(CommentRegex)) {
+        throw `registerUser: Content cannot contain all numbers or special characters`;
+      }
+    } catch (error) {
+      setError(error);
+      return;
+    }
     try {
       const res = await request(
         "http://localhost:4000/",
@@ -43,6 +87,7 @@ const NewComment = ({ blogData, authorData, userData }) => {
     } catch (error) {
       console.error(error);
     }
+    setError("");
     setComment("");
   };
 
@@ -52,6 +97,16 @@ const NewComment = ({ blogData, authorData, userData }) => {
 
   return (
     <div>
+      {error && (
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
+          <strong className="font-bold">Holy smokes!</strong>
+          <br />
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
       <form
         onSubmit={handleSubmit}
         className="mt-7 flex items-center justify-center gap-2"
@@ -72,31 +127,33 @@ const NewComment = ({ blogData, authorData, userData }) => {
         </button>
       </form>
       <div>
-        {allComments
-          .slice()
-          .reverse()
-          .map((comment, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between mt-5 pb-5 border-b-2 border-white"
-            >
-              <div>
-                <h1 className="text-xs">
-                  {comment.user.fname} commented on {comment.date.toString()}:
-                </h1>
-                <h1 className="ml-4 mt-2">{comment.comment}</h1>
+        {allComments &&
+          allComments
+            .slice()
+            .reverse()
+            .map((comment, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between mt-5 pb-5 border-b-2 border-white"
+              >
+                <div>
+                  <h1 className="text-xs">
+                    {comment.user.fname} commented on{" "}
+                    {formatBlogDate(comment.date.toString())}:
+                  </h1>
+                  <h1 className="ml-4 mt-2">{comment.comment}</h1>
+                </div>
+                <div>
+                  {comment.user._id === userData._id && (
+                    <DeleteComment
+                      commentId={comment._id}
+                      setAllComments={setAllComments}
+                      userId={userData._id}
+                    />
+                  )}
+                </div>
               </div>
-              <div>
-                {comment.user._id === userData._id && (
-                  <DeleteComment
-                    commentId={comment._id}
-                    setAllComments={setAllComments}
-                    userId={userData._id}
-                  />
-                )}
-              </div>
-            </div>
-          ))}
+            ))}
       </div>
     </div>
   );

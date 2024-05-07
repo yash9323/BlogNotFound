@@ -12,6 +12,30 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaTag } from "react-icons/fa6";
 
 const BlogPostCard = ({ blogData, authorData, userData }) => {
+  const [blogDate, setBlogDate] = useState(formatBlogDate(blogData.date));
+
+  function formatBlogDate(dateString) {
+    const date = new Date(dateString);
+    const options = {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    };
+    const day = new Intl.DateTimeFormat("en-US", { day: "numeric" }).format(
+      date
+    );
+    const month = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
+      date
+    );
+    const year = new Intl.DateTimeFormat("en-US", { year: "numeric" }).format(
+      date
+    );
+
+    const displayDate = `${month} ${day}, ${year}`;
+
+    return displayDate;
+  }
+
   const modules = {
     toolbar: false,
   };
@@ -107,10 +131,10 @@ const BlogPostCard = ({ blogData, authorData, userData }) => {
         modules={modules}
       />
       <div className="flex items-center gap-4 justify-end">
-      <button className="flex w-20 justify-center items-center rounded-full bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ml-2">
-      <FaTag />
-      {blogData.tag}
-    </button>
+        <button className="flex w-20 justify-center items-center rounded-full bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ml-2">
+          <FaTag />
+          {blogData.tag}
+        </button>
         <h4>{likesCount} Likes</h4>
         <button onClick={handleLikeUnlike}>
           {isLiked ? <AiFillLike size={30} /> : <AiOutlineLike size={30} />}
@@ -131,7 +155,7 @@ const BlogPostCard = ({ blogData, authorData, userData }) => {
         </button>
       </div>
       <div className="text-sm">
-        <h5>Written on: {blogData.date}</h5>
+        <h5>Written on: {blogDate}</h5>
         <h4>
           Author: {authorData?.fname} {authorData?.lname}
         </h4>
