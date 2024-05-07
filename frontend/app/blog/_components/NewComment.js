@@ -91,6 +91,7 @@ const NewComment = ({ blogData, authorData, userData }) => {
                   <DeleteComment
                     commentId={comment._id}
                     setAllComments={setAllComments}
+                    userId={userData._id}
                   />
                 )}
               </div>

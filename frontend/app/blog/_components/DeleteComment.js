@@ -4,7 +4,7 @@ import { request } from "graphql-request";
 import queries from "../../../queries";
 import { MdOutlineDelete } from "react-icons/md";
 
-const DeleteComment = ({ commentId, setAllComments }) => {
+const DeleteComment = ({ commentId, setAllComments, userId }) => {
   const handleDelete = async (event) => {
     event.preventDefault();
     try {
@@ -13,6 +13,7 @@ const DeleteComment = ({ commentId, setAllComments }) => {
         queries.DELETE_COMMMENT,
         {
           commentId,
+          userId,
         }
       );
 
@@ -24,7 +25,11 @@ const DeleteComment = ({ commentId, setAllComments }) => {
     }
   };
 
-  return <button onClick={handleDelete}><MdOutlineDelete size={20}/></button>;
+  return (
+    <button onClick={handleDelete}>
+      <MdOutlineDelete size={20} />
+    </button>
+  );
 };
 
 export default DeleteComment;

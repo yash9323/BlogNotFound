@@ -1034,7 +1034,7 @@ export const resolvers = {
       return newComment;
     },
     removeComment: async (_, args) => {
-      let { commentId } = args;
+      let { commentId, userId } = args;
 
       commentId = commentId.trim();
       if (!validate(commentId)) {
@@ -1051,6 +1051,15 @@ export const resolvers = {
           "removeComment: could not find comment with given id",
           {
             extensions: { code: "NOT_FOUND", statusCode: 404 },
+          }
+        );
+      }
+
+      if (comment.userId !== userId) {
+        throw new GraphQLError(
+          "removeBlog: You do not have the permission to remove this comment",
+          {
+            extensions: { code: "BAD_USER_INPUT", statusCode: 403 },
           }
         );
       }

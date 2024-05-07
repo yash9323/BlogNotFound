@@ -284,13 +284,14 @@ const UNSAVE_BLOG = gql`
 `;
 
 const DELETE_BLOG = gql`
-  mutation Mutation($id: String!) {
-    removeBlog(_id: $id) {
+  mutation Mutation($id: String!, $userId: String!) {
+    removeBlog(_id: $id, userId: $userId) {
       _id
       content
       date
       image
       likes
+      tag
       title
       userId
     }
@@ -340,8 +341,8 @@ const GET_COMMENTS_BY_BLOG_ID = gql`
 `;
 
 const DELETE_COMMMENT = gql`
-  mutation Mutation($commentId: String!) {
-    removeComment(commentId: $commentId) {
+  mutation Mutation($commentId: String!, $userId: String!) {
+    removeComment(commentId: $commentId, userId: $userId) {
       _id
       blogId
       comment
@@ -354,6 +355,7 @@ const DELETE_COMMMENT = gql`
         followers
         following
         lname
+        password
         saved
       }
     }

@@ -117,6 +117,7 @@ type User {
       comment: String!): Comment
     
     removeComment(
-      commentId: String!): Comment
+      commentId: String!
+      userId: String!): Comment
   }
 `;

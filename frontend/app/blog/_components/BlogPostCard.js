@@ -69,7 +69,7 @@ const BlogPostCard = ({ blogData, authorData, userData }) => {
       return;
     }
 
-    const variables = { id: blogData._id };
+    const variables = { id: blogData._id, userId: userData._id };
 
     try {
       const res = await request(
