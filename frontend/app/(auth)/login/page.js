@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { checkEmail, checkPassword } from "@/app/validations";
 
 const Login = () => {
   const router = useRouter();
@@ -14,8 +15,18 @@ const Login = () => {
     let email = e.target.email.value;
     let password = e.target.password.value;
 
-    // add validations here
+    //validations
+    try {
+      checkEmail(email);
+      checkPassword(password);
+    } catch (error) {
+      setShowError(true);
+      setError(error);
+      return;
+    }
 
+    setShowError(false);
+    setError("");
     const resss = await signIn("credentials", {
       redirect: false,
       email,

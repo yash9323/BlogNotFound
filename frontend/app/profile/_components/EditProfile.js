@@ -1,42 +1,71 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { fnameChecker, lnameChecker, validateBio } from "../../validations";
+import toast, { Toaster } from "react-hot-toast";
 
 const EditProfile = ({ data }) => {
   const router = useRouter();
+  const [error, setError] = useState("");
   const handleSubmit = async (e) => {
     e.preventDefault();
     let fname = e.target.fname.value;
     let lname = e.target.lname.value;
     let bio = e.target.bio.value;
-    let email = e.target.email.value;
 
-    // validation here
+    // validations
+
+    try {
+      fnameChecker(fname);
+      lnameChecker(lname);
+      validateBio(bio);
+    } catch (error) {
+      setError(error);
+      return;
+    }
 
     data.fname = fname;
     data.lname = lname;
     data.bio = bio;
-    data.email = email;
 
     try {
       const res = await fetch("/api/edituser", {
         method: "POST",
         body: JSON.stringify(data),
       });
+      const api = await res.json();
       if (res.ok) {
-        router.refresh();
-        router.push(`/profile?${Math.random().toString()}`);
+        toast.success(`${api.message} \n Redirecting...`, {
+          duration: 2000,
+        });
+        setTimeout(() => {
+          router.push(`/profile?${Math.random().toString()}`);
+        }, 1500);
+      } else {
+        toast.error(api.error);
+        return;
       }
     } catch (error) {
-      console.error(error);
+      toast.error(error);
     }
   };
   return (
     <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      <Toaster />
       <h3 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">
         EDIT DETAILS
       </h3>
       <div>
+        {error && (
+          <div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+            role="alert"
+          >
+            <strong className="font-bold">Holy smokes!</strong>
+            <br />
+            <span className="block sm:inline">{error}</span>
+          </div>
+        )}
         <form className="mt-5 space-y-6" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium leading-6 text-white">
@@ -81,7 +110,7 @@ const EditProfile = ({ data }) => {
               />
             </div>
           </div>
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium leading-6 text-white">
               Email Address
             </label>
@@ -94,7 +123,7 @@ const EditProfile = ({ data }) => {
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
-          </div>
+          </div> */}
           <div>
             <button
               type="submit"

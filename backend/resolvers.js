@@ -344,7 +344,7 @@ export const resolvers = {
       return newUser;
     },
     editUser: async (_, args) => {
-      let { _id, fname, lname, email, bio } = args;
+      let { _id, fname, lname, bio } = args;
 
       _id = _id.trim();
       if (!validate(_id)) {
@@ -366,20 +366,20 @@ export const resolvers = {
         validateLasttName(lname);
         updateFields.lname = lname;
       }
-      if (email !== undefined && email !== null) {
-        email = checkEmail(email);
-        if (userToEdit.email !== email) {
-          const existingUserWithEmail = await users.findOne({ email: email });
+      // if (email !== undefined && email !== null) {
+      //   email = checkEmail(email);
+      //   if (userToEdit.email !== email) {
+      //     const existingUserWithEmail = await users.findOne({ email: email });
 
-          if (existingUserWithEmail) {
-            throw new GraphQLError(`editUser: This email already exists`, {
-              extensions: { code: "INTERNAL_SERVER_ERROR", statusCode: 400 },
-            });
-          }
-        }
+      //     if (existingUserWithEmail) {
+      //       throw new GraphQLError(`editUser: This email already exists`, {
+      //         extensions: { code: "INTERNAL_SERVER_ERROR", statusCode: 400 },
+      //       });
+      //     }
+      //   }
 
-        updateFields.email = email;
-      }
+      //   updateFields.email = email;
+      // }
 
       if (bio !== undefined && bio !== null) {
         validateBio(bio);
@@ -391,11 +391,11 @@ export const resolvers = {
         { $set: updateFields }
       );
 
-      if (updateResult.modifiedCount === 0) {
-        throw new GraphQLError("editUser: Nothing updated", {
-          extensions: { code: "BAD_USER_INPUT", statusCode: 400 },
-        });
-      }
+      // if (updateResult.modifiedCount === 0) {
+      //   throw new GraphQLError("editUser: Nothing updated", {
+      //     extensions: { code: "BAD_USER_INPUT", statusCode: 400 },
+      //   });
+      // }
 
       const updatedUser = await users.findOne({ _id: _id });
 
@@ -699,11 +699,11 @@ export const resolvers = {
         { $set: updateFields }
       );
 
-      if (updateResult.modifiedCount === 0) {
-        throw new GraphQLError("editBlog: Nothing updated", {
-          extensions: { code: "BAD_USER_INPUT", statusCode: 400 },
-        });
-      }
+      // if (updateResult.modifiedCount === 0) {
+      //   throw new GraphQLError("editBlog: Nothing updated", {
+      //     extensions: { code: "BAD_USER_INPUT", statusCode: 400 },
+      //   });
+      // }
 
       const updatedBlog = await blogs.findOne({ _id: _id });
 
