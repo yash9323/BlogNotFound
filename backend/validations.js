@@ -166,7 +166,7 @@ const validateTag = (tag) => {
   return tag;
 };
 const validateComment = (comment) => {
-  const minCommentLength = 5;
+  const minCommentLength = 1;
   const maxCommentLength = 50;
 
   const CommentRegex = /[a-zA-Z]/;
