@@ -9,6 +9,7 @@ import { CiBookmark, CiBookmarkCheck } from "react-icons/ci";
 import { FaRegEdit } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { FaTag } from "react-icons/fa6";
 
 const BlogPostCard = ({ blogData, authorData, userData }) => {
   const modules = {
@@ -106,6 +107,10 @@ const BlogPostCard = ({ blogData, authorData, userData }) => {
         modules={modules}
       />
       <div className="flex items-center gap-4 justify-end">
+      <button className="flex w-20 justify-center items-center rounded-full bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ml-2">
+      <FaTag />
+      {blogData.tag}
+    </button>
         <h4>{likesCount} Likes</h4>
         <button onClick={handleLikeUnlike}>
           {isLiked ? <AiFillLike size={30} /> : <AiOutlineLike size={30} />}
