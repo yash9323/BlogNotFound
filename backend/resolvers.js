@@ -294,7 +294,6 @@ export const resolvers = {
 
         const hits = result.hits.hits.map((hit) => hit._id);
 
-        console.log(hits);
         const blogs = await blogCollection();
 
         const matchedBlogs = await blogs.find({ _id: { $in: hits } }).toArray();
@@ -437,6 +436,9 @@ export const resolvers = {
         { following: _id },
         { $pull: { following: _id } }
       );
+
+      const comments = await commentCollection();
+      const deleteComments = await comments.deleteMany({ "user._id": _id });
 
       const removeFromFollowers = await users.updateMany(
         { followers: _id },

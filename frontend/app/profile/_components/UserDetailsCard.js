@@ -23,7 +23,7 @@ const UserDetailsCard = ({ data }) => {
         router.push(udata.url);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

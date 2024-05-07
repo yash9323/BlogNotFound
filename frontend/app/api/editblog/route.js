@@ -30,9 +30,7 @@ export async function POST(req) {
     const formData = await req.formData();
     let fg = formData.get("fg");
     let id = formData.get("id");
-    console.log("id", id);
     let tag = formData.get("tag");
-    console.log("tag", tag);
     let title = formData.get("title");
     let content = formData.get("content");
     let userId = formData.get("userId");
@@ -47,7 +45,7 @@ export async function POST(req) {
         tag: tag,
         content: content,
       });
-      return NextResponse.json({ message: "success" }, { status: 200 });
+      return NextResponse.json({ message: "Success" }, { status: 200 });
     } else {
       let image = formData.get("file");
 

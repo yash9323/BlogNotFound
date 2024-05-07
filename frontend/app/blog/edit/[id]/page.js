@@ -7,7 +7,11 @@ import toast, { Toaster } from "react-hot-toast";
 import Editor from "@/app/createblog/_components/Editor";
 import request from "graphql-request";
 import queries from "../../../../queries";
-import { validateTag,validateTitle, validateContent } from "../../../validations";
+import {
+  validateTag,
+  validateTitle,
+  validateContent,
+} from "../../../validations";
 
 const Page = ({ params }) => {
   const { id } = params;
@@ -20,7 +24,7 @@ const Page = ({ params }) => {
   const [limage, setLimage] = useState(null);
   const [error, setError] = useState("");
   const [showEditor, setShowEditor] = useState(false);
-  const [bstatus, setBstatus] = useState("Edit Blog")
+  const [bstatus, setBstatus] = useState("Edit Blog");
 
   const fetchData = async () => {
     if (session) {
@@ -66,23 +70,22 @@ const Page = ({ params }) => {
     if (!tag) {
       tag = "";
     }
-    setBstatus("Validating..")
-    try{
-      validateTag(tag)
-      validateTitle(title)
-      validateContent(text)
-      if (!image){
-        throw "Please Choose An Blog Image"
+    setBstatus("Validating..");
+    try {
+      validateTag(tag);
+      validateTitle(title);
+      validateContent(text);
+      if (!image) {
+        throw "Please Choose An Blog Image";
       }
+    } catch (e) {
+      setError(e);
+      setBstatus("Edit Blog");
+      return;
     }
-    catch(e){
-      setError(e)
-      setBstatus("Edit Blog")
-      return 
-    } 
 
-    setError("")
-    setBstatus("Editing..")
+    setError("");
+    setBstatus("Editing..");
 
     const formData = new FormData();
     if (image !== limage) {
@@ -104,7 +107,7 @@ const Page = ({ params }) => {
       });
       if (res.ok) {
         toast.success(`Blog Updated Successfully`, {
-          duration: 2000,
+          duration: 1500,
         });
         setTimeout(() => {
           router.push("/myblogs");
@@ -126,17 +129,16 @@ const Page = ({ params }) => {
         </h3>
       </div>
       <div>
-      {error && (
+        {error && (
           <div
             className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-            role="alert">
+            role="alert"
+          >
             <strong className="font-bold">Holy smokes!</strong>
-            <br/>
-              <span className="block sm:inline">
-                {error}
-              </span>
+            <br />
+            <span className="block sm:inline">{error}</span>
           </div>
-      )}
+        )}
         <form className="mt-5 space-y-6" onSubmit={handleSubmit}>
           <div>
             {image && (
@@ -198,8 +200,8 @@ const Page = ({ params }) => {
             )}
           </div>
           <div>
-          <button
-              type={bstatus === "Edit Blog" ? "submit" :  "button"}
+            <button
+              type={bstatus === "Edit Blog" ? "submit" : "button"}
               className="flex w-30 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
               {bstatus}

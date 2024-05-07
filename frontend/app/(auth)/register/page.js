@@ -56,7 +56,7 @@ const RegisterPage = () => {
       const data = await res.json();
       if (res.ok) {
         toast.success(`${data.message} \n Redirecting...`, {
-          duration: 2000,
+          duration: 1500,
         });
         setTimeout(() => {
           router.push("/login");

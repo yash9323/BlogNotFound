@@ -36,7 +36,7 @@ const EditProfile = ({ data }) => {
       const api = await res.json();
       if (res.ok) {
         toast.success(`${api.message} \n Redirecting...`, {
-          duration: 2000,
+          duration: 1500,
         });
         setTimeout(() => {
           router.push(`/profile?${Math.random().toString()}`);
@@ -110,20 +110,6 @@ const EditProfile = ({ data }) => {
               />
             </div>
           </div>
-          {/* <div>
-            <label className="block text-sm font-medium leading-6 text-white">
-              Email Address
-            </label>
-            <div className="mt-2">
-              <input
-                type="text"
-                name="email"
-                defaultValue={data.email}
-                placeholder="Enter Your Email Here"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div> */}
           <div>
             <button
               type="submit"

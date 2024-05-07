@@ -1,13 +1,7 @@
 import { NextResponse } from "next/server";
 import { request } from "graphql-request";
 import queries from "../../../queries";
-import {
-  fnameChecker,
-  lnameChecker,
-  validateBio,
-  checkEmail,
-  checkPassword,
-} from "../../validations";
+import { fnameChecker, lnameChecker, validateBio } from "../../validations";
 
 export async function POST(req) {
   try {
@@ -16,13 +10,11 @@ export async function POST(req) {
     fnameChecker(data.fname);
     lnameChecker(data.lname);
     validateBio(data.bio);
-    checkEmail(data.email);
 
     const res = await request("http://localhost:4000/", queries.EDIT_USER, {
       id: data._id,
       fname: data.fname,
       lname: data.lname,
-      email: data.email,
       bio: data.bio,
     });
     return NextResponse.json({ message: "success" }, { status: 200 });
