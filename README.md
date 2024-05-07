@@ -16,5 +16,9 @@ search CSS
 
 CSS for edit blog text editor
 
-List of followers and Following -- button to follow/unfollow
-tags
+npm run dev ??
+punycode,
+webpack,
+
+password check on encrypted password
+permission to perform operations

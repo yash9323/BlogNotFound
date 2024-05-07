@@ -92,7 +92,8 @@ type User {
       tag: String ): Blog
     
     removeBlog( 
-      _id: String!): Blog
+      _id: String!
+      userId: String! ): Blog
     
     saveBlog(
       blogId: String!
