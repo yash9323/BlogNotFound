@@ -43,6 +43,9 @@ const UserDetailsCard = ({ data }) => {
             Edit Profile
           </button>
         </Link>
+        <button onClick={handleDelete} className="ml-5">
+          <MdDeleteOutline size={30} />
+        </button>
       </div>
       <div className="flex flex-col space-y-4 text-gray-300">
         <div className="border-b border-dashed border-gray-400 pb-2">
@@ -61,11 +64,6 @@ const UserDetailsCard = ({ data }) => {
         <div className="flex justify-between text-gray-300">
           <p>Followers: {data.followers.length}</p>
           <p>Following: {data.following.length}</p>
-        </div>
-        <div>
-          <button onClick={handleDelete}>
-            <MdDeleteOutline />
-          </button>
         </div>
       </div>
     </div>

@@ -29,7 +29,7 @@ const ShowAllBlogs = () => {
     return <div>Loading...</div>;
   } else {
     return (
-      <div className="mt-10">
+      <div className="">
         <h1 className="mt-2 text-center text-2xl font-bold leading-9 tracking-tight text-white">
           &lt; Trending Now /&gt;
         </h1>

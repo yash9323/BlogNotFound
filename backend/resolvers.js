@@ -269,6 +269,12 @@ export const resolvers = {
     searchBlogs: async (_, args) => {
       let { searchTerm } = args;
 
+      searchTerm.trim();
+      if (!searchTerm) {
+        throw new GraphQLError("SearchTerm cannot be empty", {
+          extensions: { code: "INVALID", statusCode: 400 },
+        });
+      }
       searchTerm = searchTerm.toLowerCase();
 
       try {

@@ -8,7 +8,7 @@ const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [result, setResult] = useState([]);
   const [error, setError] = useState("");
-  const fetchData = async () => {
+  const fetchData = async (searchTerm) => {
     try {
       const response = await request(
         "http://localhost:4000/",
@@ -18,20 +18,23 @@ const Search = () => {
       setResult(response.searchBlogs);
     } catch (error) {
       setError("An error occurred while fetching data");
-      console.error(error);
     }
   };
-  useEffect(() => {
-    fetchData();
-  }, [searchTerm]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const searchInput = event.target.searchbar.value;
+    if (!searchInput) {
+      setError("Search term cannot be empty");
+      setResult([]);
+      return;
+    }
+    setError("");
     setSearchTerm(searchInput);
+    await fetchData(searchInput);
   };
   return (
-    <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+    <div className="mt-10">
       <form onSubmit={handleSubmit} className="mt-5 space-y-6">
         <div>
           <label className="block text-sm font-medium leading-6 text-white">

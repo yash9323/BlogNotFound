@@ -11,7 +11,7 @@ const FindPeople = () => {
   const [result, setResult] = useState([]);
   const [error, setError] = useState("");
 
-  const fetchData = async () => {
+  const fetchData = async (searchTerm) => {
     try {
       if (session) {
         const response = await request(
@@ -24,18 +24,20 @@ const FindPeople = () => {
       }
     } catch (error) {
       setError("An error occurred while fetching data.");
-      console.error(error);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [searchTerm, session]);
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const searchInput = event.target.searchbar.value;
+    if (!searchInput) {
+      setError("Search term cannot be empty");
+      setResult([]);
+      return;
+    }
+    setError("");
     setSearchTerm(searchInput);
+    await fetchData(searchInput);
   };
 
   return (
