@@ -5,12 +5,15 @@ import toast, { Toaster } from "react-hot-toast";
 import Editor from "./_components/Editor";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { validateTag,validateTitle, validateContent } from "../validations";
 
 const Page = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
+  const [error, setError] = useState("")
+  const [bstatus, setBstatus] = useState("Create Blog")
 
   const handleContentChange = (newText) => {
     setText(newText);
@@ -24,9 +27,27 @@ const Page = () => {
     e.preventDefault();
     let title = e.target.title.value;
     let tag = e.target.tag.value;
+
     if (!tag) {
       tag = "";
     }
+    setBstatus("Validating..")
+    try{
+      validateTag(tag)
+      validateTitle(title)
+      validateContent(text)
+      if (!image){
+        throw "Please Choose An Blog Image"
+      }
+    }
+    catch(e){
+      setError(e)
+      setBstatus("Create Blog")
+      return 
+    } 
+
+    setError("")
+    setBstatus("Creating..")
     const formData = new FormData();
     formData.append("file", image);
     formData.append("tag", tag);
@@ -48,8 +69,10 @@ const Page = () => {
         return;
       }
       toast.error("Error while adding blog");
+      setBstatus("Create Blog")
     } catch (error) {
       console.error(error);
+      setBstatus("Create Blog")
     }
   };
 
@@ -62,6 +85,17 @@ const Page = () => {
         </h3>
       </div>
       <div>
+      {error && (
+          <div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+            role="alert">
+            <strong className="font-bold">Holy smokes!</strong>
+            <br/>
+              <span className="block sm:inline">
+                {error}
+              </span>
+          </div>
+      )}
         <form className="mt-5 space-y-6" onSubmit={handleSubmit}>
           <div>
             {image && (
@@ -120,10 +154,10 @@ const Page = () => {
           </div>
           <div>
             <button
-              type="submit"
+              type={bstatus === "Create Blog" ? "submit" :  "button"}
               className="flex w-30 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-              Create Blog
+              {bstatus}
             </button>
           </div>
         </form>

@@ -165,6 +165,7 @@ const validateTag = (tag) => {
   }
   return tag;
 };
+
 const validateComment = (comment) => {
   const minCommentLength = 1;
   const maxCommentLength = 50;
