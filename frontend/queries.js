@@ -49,56 +49,107 @@ const GET_USER = gql`
     }
   }
 `;
+
+const REMOVE_USER = gql`
+  mutation Mutation($id: String!) {
+    removeUser(_id: $id) {
+      _id
+      bio
+      email
+      fname
+      followers
+      following
+      lname
+      saved
+    }
+  }
+`;
+
 const GET_BLOG = gql`
-  query GetBlog($blogId: String!) {
+  query Query($blogId: String!) {
     getBlog(blogId: $blogId) {
       _id
       content
       date
+      image
       likes
+      tag
       title
       userId
-      image
     }
   }
 `;
 
 const CREATE_BLOG = gql`
-  mutation Mutation($title: String!, $content: String!, $userId: String!, $image: String!) {
-    createBlog(title: $title, content: $content, userId: $userId, image: $image) {
+  mutation Mutation(
+    $title: String!
+    $image: String!
+    $content: String!
+    $userId: String!
+    $tag: String
+  ) {
+    createBlog(
+      title: $title
+      image: $image
+      content: $content
+      userId: $userId
+      tag: $tag
+    ) {
       _id
       content
       date
+      image
       likes
+      tag
       title
       userId
-      image
     }
   }
 `;
+
+const EDIT_BLOG = gql`
+  mutation Mutation(
+    $id: String!
+    $userId: String!
+    $image: String
+    $title: String
+    $content: String
+    $tag: String
+  ) {
+    editBlog(
+      _id: $id
+      userId: $userId
+      image: $image
+      title: $title
+      content: $content
+      tag: $tag
+    ) {
+      _id
+      content
+      date
+      image
+      likes
+      tag
+      title
+      userId
+    }
+  }
+`;
+
 const EDIT_USER = gql`
   mutation Mutation(
     $id: String!
     $fname: String
     $lname: String
     $email: String
-    $password: String
     $bio: String
   ) {
-    editUser(
-      _id: $id
-      fname: $fname
-      lname: $lname
-      email: $email
-      password: $password
-      bio: $bio
-    ) {
+    editUser(_id: $id, fname: $fname, lname: $lname, email: $email, bio: $bio) {
       _id
       bio
       email
       fname
       lname
-      password
       followers
       following
       saved
@@ -107,13 +158,28 @@ const EDIT_USER = gql`
 `;
 
 const GET_ALL_BLOGS = gql`
-  query Query {
+  query GetAllBlogs {
     getAllBlogs {
-      _id
+      userId
       title
+      image
+      likes
+      date
+      content
+      _id
+    }
+  }
+`;
+
+const SEARCH_BLOGS = gql`
+  query SearchBlogs($searchTerm: String!) {
+    searchBlogs(searchTerm: $searchTerm) {
+      _id
       content
       date
+      image
       likes
+      title
       userId
     }
   }
@@ -128,6 +194,7 @@ const GET_SAVED_BLOGS = gql`
       likes
       title
       userId
+      image
     }
   }
 `;
@@ -138,6 +205,21 @@ const GET_BLOGS_BY_USER_ID = gql`
       _id
       content
       date
+      likes
+      title
+      userId
+      image
+    }
+  }
+`;
+
+const GET_BLOGS_BY_FOLLOWING = gql`
+  query Query($userId: String!) {
+    getBlogsByFollowing(userId: $userId) {
+      _id
+      content
+      date
+      image
       likes
       title
       userId
@@ -181,7 +263,6 @@ const SAVE_BLOG = gql`
       followers
       following
       lname
-      password
       saved
     }
   }
@@ -196,9 +277,22 @@ const UNSAVE_BLOG = gql`
       fname
       followers
       following
-      password
       lname
       saved
+    }
+  }
+`;
+
+const DELETE_BLOG = gql`
+  mutation Mutation($id: String!) {
+    removeBlog(_id: $id) {
+      _id
+      content
+      date
+      image
+      likes
+      title
+      userId
     }
   }
 `;
@@ -218,7 +312,6 @@ const CREATE_COMMENT = gql`
         followers
         following
         lname
-        password
         saved
       }
     }
@@ -240,7 +333,6 @@ const GET_COMMENTS_BY_BLOG_ID = gql`
         followers
         following
         lname
-        password
         saved
       }
     }
@@ -262,7 +354,6 @@ const DELETE_COMMMENT = gql`
         followers
         following
         lname
-        password
         saved
       }
     }
@@ -279,7 +370,6 @@ const FOLLOW_USER = gql`
       followers
       following
       lname
-      password
       saved
     }
   }
@@ -295,15 +385,14 @@ const UNFOLLOW_USER = gql`
       followers
       following
       lname
-      password
       saved
     }
   }
 `;
 
 const SEARCH_USER_BY_NAME = gql`
-  query Query($searchTerm: String!) {
-    searchUserByName(searchTerm: $searchTerm) {
+  query Query($selfId: String!, $searchTerm: String!) {
+    searchUserByName(selfId: $selfId, searchTerm: $searchTerm) {
       _id
       bio
       email
@@ -311,14 +400,36 @@ const SEARCH_USER_BY_NAME = gql`
       followers
       following
       lname
-      password
       saved
     }
   }
 `;
+
+const GET_BLOGS_BY_TAG = gql`
+  query Query($tag: String!) {
+    getBlogsByTag(tag: $tag) {
+      _id
+      content
+      date
+      image
+      likes
+      tag
+      title
+      userId
+    }
+  }
+`;
+
+const GET_TAGS = gql`
+  query Query {
+    getTags
+  }
+`;
+
 let exported = {
   LOGIN_USER,
   REGISTER_USER,
+  REMOVE_USER,
   FOLLOW_USER,
   UNFOLLOW_USER,
   GET_USER,
@@ -326,16 +437,22 @@ let exported = {
   GET_ALL_BLOGS,
   GET_SAVED_BLOGS,
   GET_BLOGS_BY_USER_ID,
+  GET_BLOGS_BY_FOLLOWING,
+  EDIT_BLOG,
   LIKE_BLOG,
   UNLIKE_BLOG,
   SAVE_BLOG,
   UNSAVE_BLOG,
   CREATE_BLOG,
+  DELETE_BLOG,
   EDIT_USER,
   CREATE_COMMENT,
   GET_COMMENTS_BY_BLOG_ID,
   DELETE_COMMMENT,
   SEARCH_USER_BY_NAME,
+  SEARCH_BLOGS,
+  GET_BLOGS_BY_TAG,
+  GET_TAGS,
 };
 
 export default exported;

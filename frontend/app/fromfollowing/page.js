@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-import queries from "../../queries";
 import { request } from "graphql-request";
-import BlogList from "./_components/BlogList";
+import queries from "../../queries";
 import { useSession } from "next-auth/react";
+import BlogList from "../blog/_components/BlogList";
 
 const Page = () => {
   const { data: session, status } = useSession();
@@ -13,12 +13,12 @@ const Page = () => {
       try {
         const res = await request(
           "http://localhost:4000/",
-          queries.GET_SAVED_BLOGS,
+          queries.GET_BLOGS_BY_FOLLOWING,
           {
             userId: session.user._id,
           }
         );
-        setBlogData(res.getSavedBlogs);
+        setBlogData(res.getBlogsByFollowing);
       } catch (error) {
         console.error(error);
       }
@@ -30,15 +30,15 @@ const Page = () => {
   }, [session]);
 
   if (!blogData) {
-    <h1>Loading...</h1>;
+    return <h1>Loading...</h1>;
   } else {
     return (
       <div className="mt-10">
         <h1 className="mt-2 text-center text-2xl font-bold leading-9 tracking-tight text-white">
-          &lt; Saved Blogs /&gt;
+          &lt; Blogs from people you follow /&gt;
         </h1>
         {blogData.length === 0 ? (
-          <div>No Saved Blogs</div>
+          "No Blogs found"
         ) : (
           <BlogList data={blogData} />
         )}

@@ -1,16 +1,52 @@
 "use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import toast, { Toaster } from "react-hot-toast";
-import Editor from "./_components/Editor";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import toast, { Toaster } from "react-hot-toast";
+import Editor from "@/app/createblog/_components/Editor";
+import request from "graphql-request";
+import queries from "../../../../queries";
 
-const Page = () => {
+const Page = ({ params }) => {
+  const { id } = params;
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [title, setTitle] = useState("");
+  const [tag, setTag] = useState("");
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
+  const [limage, setLimage] = useState(null);
+  const [error, setError] = useState("");
+  const [showEditor, setShowEditor] = useState(false);
+
+  const fetchData = async () => {
+    if (session) {
+      try {
+        const response = await request(
+          "http://localhost:4000",
+          queries.GET_BLOG,
+          {
+            blogId: id,
+          }
+        );
+        if (!response) {
+          setError("Blog details not found");
+        }
+        setTitle(response.getBlog.title);
+        setText(response.getBlog.content);
+        setLimage(response.getBlog.image);
+        setImage(response.getBlog.image);
+        setTag(response.getBlog.tag);
+        setShowEditor(true);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, [id, session]);
 
   const handleContentChange = (newText) => {
     setText(newText);
@@ -24,30 +60,34 @@ const Page = () => {
     e.preventDefault();
     let title = e.target.title.value;
     let tag = e.target.tag.value;
-    if (!tag) {
-      tag = "";
-    }
     const formData = new FormData();
-    formData.append("file", image);
+    if (image !== limage) {
+      formData.append("file", image);
+      formData.append("fg", true);
+    } else {
+      formData.append("fg", false);
+    }
+
+    formData.append("id", id);
     formData.append("tag", tag);
     formData.append("title", title);
     formData.append("content", text);
     formData.append("userId", session.user._id);
     try {
-      const res = await fetch("/api/createblog", {
+      const res = await fetch("/api/editblog", {
         method: "POST",
         body: formData,
       });
       if (res.ok) {
-        toast.success(`Blog Created Successfully, redirecting`, {
+        toast.success(`Blog Updated Successfully`, {
           duration: 2000,
         });
         setTimeout(() => {
-          router.push("/");
+          router.push("/myblogs");
         }, 1500);
         return;
       }
-      toast.error("Error while adding blog");
+      toast.error("Error while updating blog");
     } catch (error) {
       console.error(error);
     }
@@ -58,7 +98,7 @@ const Page = () => {
       <Toaster position="bottom-center" />
       <div>
         <h3 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">
-          Create a New Blog
+          Edit Blog
         </h3>
       </div>
       <div>
@@ -70,7 +110,7 @@ const Page = () => {
                 <Image
                   width={200}
                   height={200}
-                  src={URL.createObjectURL(image)}
+                  src={image === limage ? limage : URL.createObjectURL(image)}
                   alt=""
                   className="mt-5 w-full h-56 aspect-ratio aspect-square object-cover"
                 />
@@ -94,7 +134,7 @@ const Page = () => {
               <input
                 type="text"
                 name="tag"
-                placeholder="Enter tag for your blog"
+                defaultValue={tag}
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
@@ -107,23 +147,27 @@ const Page = () => {
               <input
                 type="text"
                 name="title"
-                placeholder="Enter Your Blog Title Here"
+                defaultValue={title}
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
           </div>
           <div>
-            <Editor
-              content={text}
-              onChange={(newContent) => handleContentChange(newContent)}
-            />
+            {showEditor ? (
+              <Editor
+                content={text}
+                onChange={(newContent) => handleContentChange(newContent)}
+              />
+            ) : (
+              <h1>Loading</h1>
+            )}
           </div>
           <div>
             <button
               type="submit"
               className="flex w-30 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-              Create Blog
+              Done Edit
             </button>
           </div>
         </form>

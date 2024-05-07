@@ -6,6 +6,10 @@ import {
   blogs as blogCollection,
   comments as commentCollection,
 } from "./config/mongoCollections.js";
+import { Client } from "@elastic/elasticsearch";
+import bcrypt from "bcrypt";
+
+const client = new Client({ node: "http://localhost:9200" });
 
 import { checkPassword, checkEmail, validateBio, validateName,validateContent,errorType, validateComment } from './validations.js';
 import { ObjectId } from 'mongodb';
@@ -18,7 +22,7 @@ export const resolvers = {
       //validate
 
       const users = await userCollection();
-      const user = await users.findOne({ email: email, password: password });
+      const user = await users.findOne({ email: email });
       if (!user) {
         throw new GraphQLError(
           "Could not find the user with provided email/password",
@@ -28,7 +32,17 @@ export const resolvers = {
         );
       }
 
-      return user;
+      const match = await bcrypt.compare(password, user.password);
+      if (match) {
+        return user;
+      } else {
+        throw new GraphQLError(
+          "Could not find the user with provided email/password",
+          {
+            extensions: { code: "NOT_FOUND", statusCode: 404 },
+          }
+        );
+      }
     },
     getUser: async (_, args) => {
       let { userId } = args;
@@ -50,8 +64,8 @@ export const resolvers = {
       return user;
     },
     searchUserByName: async (_, args) => {
-
-      let { searchTerm } = args;
+      // Validate
+      let { selfId, searchTerm } = args;
 
       if (!searchTerm.trim()) {
         throw new GraphQLError('SearchTerm cannot be empty', {
@@ -62,7 +76,6 @@ export const resolvers = {
       searchTerm = searchTerm.toLowerCase();
 
       const users = await userCollection();
-
       const allUsers = await users.find().toArray();
 
       const matchedUsersSet = new Set();
@@ -70,13 +83,15 @@ export const resolvers = {
       allUsers.forEach((user) => {
         const fnameLower = user.fname.toLowerCase();
         const lnameLower = user.lname.toLowerCase();
+
         if (
-          fnameLower.includes(searchTerm) ||
-          lnameLower.includes(searchTerm)
+          user._id !== selfId &&
+          (fnameLower.includes(searchTerm) || lnameLower.includes(searchTerm))
         ) {
           matchedUsersSet.add(user);
         }
       });
+
       const matchedUsers = Array.from(matchedUsersSet);
       return matchedUsers;
     },
@@ -101,7 +116,6 @@ export const resolvers = {
           extensions: { code: "NOT_FOUND", statusCode: 404 },
         });
       }
-
       return blog;
     },
     getBlogsByUserId: async (_, args) => {
@@ -191,11 +205,80 @@ export const resolvers = {
 
       return commentsWithBlogId;
     },
+    getBlogsByTag: async (_, args) => {
+      let { tag } = args;
+
+      if (!tag) {
+        return [];
+      }
+
+      const blogs = await blogCollection();
+
+      const matchedBlogs = await blogs.find({ tag: tag }).toArray();
+
+      return matchedBlogs;
+    },
+    getTags: async (_, args) => {
+      const blogs = await blogCollection();
+      try {
+        const uniqueTags = await blogs.distinct("tag");
+        const filteredTags = uniqueTags.filter((tag) => tag.trim() !== "");
+        return filteredTags;
+      } catch (error) {
+        console.error(error);
+        throw new Error("Error fetching unique tags");
+      }
+    },
+    // elastic search
+    searchBlogs: async (_, args) => {
+      let { searchTerm } = args;
+
+      searchTerm = searchTerm.toLowerCase();
+
+      try {
+        const result = await client.search({
+          index: "newtest",
+          body: {
+            query: {
+              bool: {
+                should: [
+                  { wildcard: { content: `*${searchTerm}*` } },
+                  { wildcard: { title: `*${searchTerm}*` } },
+                ],
+              },
+            },
+          },
+        });
+
+        // const result = await client.search({
+        //   index: "newtest",
+        //   body: {
+        //     query: {
+        //       wildcard: { content: `*${searchTerm}*` },
+        //       wildcard: { title: `*${searchTerm}*`}
+        //     },
+        //   },
+        // });
+
+        const hits = result.hits.hits.map((hit) => hit._id);
+
+        const blogs = await blogCollection();
+
+        const matchedBlogs = await blogs.find({ _id: { $in: hits } }).toArray();
+
+        return matchedBlogs;
+      } catch (error) {
+        console.error(error);
+        throw new GraphQLError(`searchBlogs: Error searching blogs`, {
+          extensions: { statusCode: 500, code: "INTERNAL_SERVER_ERROR" },
+        });
+      }
+    },
   },
   Mutation: {
     registerUser: async (_, args) => {
       let { fname, lname, email, password, bio } = args;
-
+      
       validateName(fname, lname);
       email = checkEmail(email);
       password = checkPassword(password);
@@ -284,6 +367,47 @@ export const resolvers = {
       const updatedUser = await users.findOne({ _id: _id });
 
       return updatedUser;
+    },
+    removeUser: async (_, args) => {
+      const { _id } = args;
+
+      const users = await userCollection();
+      const user = await users.findOne({ _id });
+
+      if (!user) {
+        throw new GraphQLError(
+          "removeUser: User with provided ID does not exist",
+          { extensions: { code: "BAD_USER_INPUT" } }
+        );
+      }
+
+      const blogs = await blogCollection();
+      const allBlogs = await blogs.find().toArray();
+      const blogIDsToDelete = allBlogs
+        .filter((blog) => blog.userId === _id)
+        .map((blog) => blog._id);
+
+      const removeFromOtherUsersSaved = await users.updateMany(
+        { saved: { $in: blogIDsToDelete } },
+        { $pull: { saved: { $in: blogIDsToDelete } } }
+      );
+
+      const removeFromFollowing = await users.updateMany(
+        { following: _id },
+        { $pull: { following: _id } }
+      );
+
+      const removeFromFollowers = await users.updateMany(
+        { followers: _id },
+        { $pull: { followers: _id } }
+      );
+
+      const deleteBlogs = await blogs.deleteMany({
+        _id: { $in: blogIDsToDelete },
+      });
+      const deletedUser = await users.deleteOne({ _id });
+
+      return user;
     },
     followUser: async (_, args) => {
       let { selfId, userToFollowId } = args;
@@ -433,9 +557,14 @@ export const resolvers = {
 
       return updateSelfAfter;
     },
+    // elastic search
     createBlog: async (_, args) => {
-      let { title, image, content, userId } = args;
+      let { title, image, content, userId, tag } = args;
       // validate
+      if (tag == undefined && tag == null) {
+        tag = "";
+      }
+      tag = tag.toLowerCase().trim();
 
       validateTitle(title);
       validateContent(content);
@@ -456,6 +585,7 @@ export const resolvers = {
         date: new Date(),
         likes: [],
         userId,
+        tag,
       };
 
       let insertedBlog = await blogs.insertOne(newBlog);
@@ -464,10 +594,21 @@ export const resolvers = {
           extensions: { statusCode: 400, code: "INTERNAL_SERVER_ERROR" },
         });
       }
+
+      const elastic = await client.index({
+        index: "newtest",
+        id: newBlog._id,
+        body: {
+          title: title,
+          content: content,
+        },
+      });
+
       return newBlog;
     },
+    // elastic search
     editBlog: async (_, args) => {
-      let { _id, userId, title, content } = args;
+      let { _id, userId, image, title, content, tag } = args;
 
       // validate
       if (!validate(userId)) {
@@ -492,12 +633,19 @@ export const resolvers = {
       }
 
       let updateFields = {};
+      if (title !== undefined && title !== null) {
+        updateFields.tag = tag;
+      }
 
       if (title !== undefined && title !== null) {
         updateFields.title = title;
       }
       if (content !== undefined && content !== null) {
         updateFields.content = content;
+      }
+
+      if (image !== undefined && image != null) {
+        updateFields.image = image;
       }
 
       updateFields.date = new Date();
@@ -515,12 +663,26 @@ export const resolvers = {
 
       const updatedBlog = await blogs.findOne({ _id: _id });
 
+      const elastic = await client.update({
+        index: "newtest",
+        id: updatedBlog._id,
+        body: {
+          doc: {
+            title: updatedBlog.title,
+            content: updatedBlog.content,
+          },
+        },
+      });
+
       return updatedBlog;
     },
+    // elastic search
     removeBlog: async (_, args) => {
       let { _id } = args;
 
       const blogs = await blogCollection();
+      const users = await userCollection();
+      const comments = await commentCollection();
 
       const blog = await blogs.findOne({ _id: _id });
       if (!blog) {
@@ -531,6 +693,32 @@ export const resolvers = {
           }
         );
       }
+
+      const usersWithSavedBlog = await users.find({ saved: _id });
+      if (usersWithSavedBlog.length > 0) {
+        const updateUser = await users.updateMany(
+          { saved: _id },
+          { $pull: { saved: _id } }
+        );
+
+        if (updateUser.modifiedCount === 0) {
+          throw new GraphQLError("removeBlog: Could not update users", {
+            extensions: { code: "INTERNAL_SERVER_ERROR", statusCode: 500 },
+          });
+        }
+      }
+
+      const blogComments = await comments.find({ blogId: _id });
+      if (blogComments.length > 0) {
+        const deleteComments = await comments.deleteMany({ blogId: _id });
+
+        if (deleteComments.deletedCount === 0) {
+          throw new GraphQLError("removeBlog: Could not delete comments", {
+            extensions: { code: "INTERNAL_SERVER_ERROR", statusCode: 500 },
+          });
+        }
+      }
+
       const removeBlog = await blogs.deleteOne({ _id: _id });
 
       if (removeBlog.deletedCount === 0) {
@@ -538,6 +726,11 @@ export const resolvers = {
           extensions: { code: "INTERNAL_SERVER_ERROR", statusCode: 500 },
         });
       }
+
+      const elastic = await client.delete({
+        index: "newtest",
+        id: _id,
+      });
 
       return blog;
     },

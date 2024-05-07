@@ -28,28 +28,45 @@ async function s3upload(file, fileName) {
 export async function POST(req) {
   try {
     const formData = await req.formData();
-
+    let fg = formData.get("fg");
+    let id = formData.get("id");
+    console.log("id", id);
     let tag = formData.get("tag");
-    let image = formData.get("file");
+    console.log("tag", tag);
     let title = formData.get("title");
     let content = formData.get("content");
     let userId = formData.get("userId");
 
     // add validation
 
-    // uploading image
-    const buffer = Buffer.from(await image.arrayBuffer());
-    const fileName = await s3upload(buffer, image.name);
+    if (fg == "false") {
+      const res = await request("http://localhost:4000/", queries.EDIT_BLOG, {
+        id: id,
+        userId: userId,
+        title: title,
+        tag: tag,
+        content: content,
+      });
+      return NextResponse.json({ message: "success" }, { status: 200 });
+    } else {
+      let image = formData.get("file");
 
-    // add to database
-    const res = await request("http://localhost:4000/", queries.CREATE_BLOG, {
-      title: title,
-      content: content,
-      userId: userId,
-      tag: tag,
-      image: `https://blognotf.s3.amazonaws.com/images/${fileName}`,
-    });
-    return NextResponse.json({ message: "success" }, { status: 200 });
+      // uploading image
+
+      const buffer = Buffer.from(await image.arrayBuffer());
+      const fileName = await s3upload(buffer, image.name);
+
+      // // add to database
+      const res = await request("http://localhost:4000/", queries.EDIT_BLOG, {
+        id: id,
+        title: title,
+        content: content,
+        tag: tag,
+        userId: userId,
+        image: `https://blognotf.s3.amazonaws.com/images/${fileName}`,
+      });
+      return NextResponse.json({ message: "success" }, { status: 200 });
+    }
   } catch (e) {
     console.error(e);
     return NextResponse.json(

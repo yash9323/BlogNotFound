@@ -22,6 +22,7 @@ type User {
     date: Date!
     likes: [String!]
     userId: String!
+    tag: String
   }
   
   type Comment{
@@ -35,13 +36,16 @@ type User {
   type Query {
     loginUser(email: String!, password: String): User
     getUser(userId: String!): User
-    searchUserByName(searchTerm: String!): [User]
+    searchUserByName(selfId: String!, searchTerm: String!): [User]
     getAllBlogs: [Blog]
     getBlog(blogId: String!): Blog
     getBlogsByUserId(userId: String!): [Blog]
     getBlogsByFollowing(userId: String!): [Blog]
     getSavedBlogs(userId: String!): [Blog]
     getCommentsByBlogId( blogId: String!): [Comment]
+    searchBlogs(searchTerm: String!): [Blog]
+    getBlogsByTag(tag: String!): [Blog]
+    getTags: [String]
   }
 
   type Mutation {
@@ -59,6 +63,10 @@ type User {
       email: String
       password: String
       bio: String): User
+    
+    removeUser(
+      _id: String!
+    ): User
 
     followUser(
       selfId: String!
@@ -72,13 +80,16 @@ type User {
       title: String!
       image: String!
       content: String!
-      userId: String! ): Blog
+      userId: String!
+      tag: String ): Blog
     
     editBlog(
       _id: String!
       userId: String!
+      image: String
       title: String
-      content: String): Blog
+      content: String
+      tag: String ): Blog
     
     removeBlog( 
       _id: String!): Blog

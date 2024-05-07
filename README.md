@@ -2,13 +2,19 @@
 
 Blog Not Found : ( One of a Kind Blog Website )
 
-My blogs / allow to edit / delete blogs -- todo -- comments will be deleted
-Find People / Follow / Unfollow DONE DONE
-
-List of followers and Following -> button to follow/unfollow
-Link tags DONE DONE
-Edit Base Code
-
 ## Basic Validation functions
 
+validations{
+trim ids
+image validate
+}
 Seed Data
+
+change elastic search index name
+
+search CSS
+
+CSS for edit blog text editor
+
+List of followers and Following -- button to follow/unfollow
+tags

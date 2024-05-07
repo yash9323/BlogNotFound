@@ -2,10 +2,14 @@
 import React from "react";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { calculateOverrideValues } from "next/dist/server/font-utils";
+import { CloudCog } from "lucide-react";
 
 const Navbar = () => {
   const { data: session, status } = useSession();
+  const router = useRouter();
   if (status === "authenticated") {
     return (
       <div className="mt-5 ml-5 mr-5 flex justify-between items-center">
@@ -16,34 +20,46 @@ const Navbar = () => {
             </h1>
           </Link>
         </div>
-        <div className="flex items-center justify-center">
+        <div className="flex items-center gap-4">
           <Link href="/saved">
-            <h1 className="text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2">
+            <h1 className="text-center text-2xl font-bold leading-9 tracking-tight text-white">
               Saved
             </h1>
           </Link>
-          <div className="flex text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2">
+          <div className="flex text-center text-2xl font-bold leading-9 tracking-tight text-white">
+            <Link href="/fromfollowing">From&nbsp;Following</Link>
+          </div>
+          <div className="flex text-center text-2xl font-bold leading-9 tracking-tight text-white">
             <Link href="/myblogs">My&nbsp;Blogs</Link>
           </div>
           <Link
             href="/createblog"
-            className="flex text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2"
+            className="flex text-center text-2xl font-bold leading-9 tracking-tight text-white"
           >
             Create&nbsp;Blog
           </Link>
           <Link
             href="/findpeople"
-            className="flex text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2"
+            className="flex text-center text-2xl font-bold leading-9 tracking-tight text-white"
           >
             Find&nbsp;People
           </Link>
+          <div className="flex text-center text-2xl font-bold leading-9 tracking-tight text-white">
+            <Link href="/search">Search</Link>
+          </div>
           <Link href="/profile">
-            <h1 className="text-center text-2xl font-bold leading-9 tracking-tight text-white border-r-2 pl-2 pr-2">
+            <h1 className="text-center text-2xl font-bold leading-9 tracking-tight text-white">
               Profile
             </h1>
           </Link>
           <button
-            onClick={() => signOut()}
+            onClick={async () => {
+              let data = await signOut({
+                redirect: false,
+                callbackUrl: "/landing",
+              });
+              router.push(data.url);
+            }}
             className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ml-2"
           >
             Sign out

@@ -1,15 +1,40 @@
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { MdDeleteOutline } from "react-icons/md";
+import { useRouter } from "next/navigation";
+import queries from "../../../queries";
+import request from "graphql-request";
+import { signOut } from "next-auth/react";
 
 const UserDetailsCard = ({ data }) => {
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    try {
+      const response = request("http://localhost:4000/", queries.REMOVE_USER, {
+        id: data._id,
+      });
+      if (response) {
+        let udata = await signOut({
+          redirect: false,
+          callbackUrl: "/landing",
+        });
+        router.push(udata.url);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="mt-10 ml-5 mr-5 flex flex-col bg-gray-800 rounded-xl p-10 shadow-md">
       <div className="flex items-center mb-8">
         <Image
           src="/img_avatar.png"
           alt="Avatar"
-          width={200} height={200}
+          width={200}
+          height={200}
           className="rounded-full w-40 h-40 mr-8 border border-white"
         />
         <div className="text-white text-xl font-bold">{`${data.fname} ${data.lname}`}</div>
@@ -36,6 +61,11 @@ const UserDetailsCard = ({ data }) => {
         <div className="flex justify-between text-gray-300">
           <p>Followers: {data.followers.length}</p>
           <p>Following: {data.following.length}</p>
+        </div>
+        <div>
+          <button onClick={handleDelete}>
+            <MdDeleteOutline />
+          </button>
         </div>
       </div>
     </div>
