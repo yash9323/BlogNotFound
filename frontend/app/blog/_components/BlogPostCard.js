@@ -3,7 +3,8 @@ import queries from "../../../queries";
 import { request } from "graphql-request";
 import NewComment from "./NewComment";
 import ReactQuill from "react-quill";
-import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
+import { AiOutlineLike } from "react-icons/ai";
+import { AiFillLike } from "react-icons/ai";
 import { CiBookmark, CiBookmarkCheck } from "react-icons/ci";
 import { FaRegEdit } from "react-icons/fa";
 import { useRouter } from "next/navigation";
@@ -107,11 +108,7 @@ const BlogPostCard = ({ blogData, authorData, userData }) => {
       <div className="flex items-center gap-4 justify-end">
         <h4>{likesCount} Likes</h4>
         <button onClick={handleLikeUnlike}>
-          {isLiked ? (
-            <AiOutlineDislike size={30} />
-          ) : (
-            <AiOutlineLike size={30} />
-          )}
+          {isLiked ? <AiFillLike size={30} /> : <AiOutlineLike size={30} />}
         </button>
         <button onClick={handleSaveUnsave} className="">
           {isSaved ? <CiBookmarkCheck size={30} /> : <CiBookmark size={30} />}
